@@ -1,0 +1,36 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="SS.RainwaveClient.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="UserId" Type="System.String" Scope="User">
+      <Value Profile="(Default)"></Value>
+    </Setting>
+    <Setting Name="BaseApiUrl" Type="(Web Service URL)" Scope="User">
+      <Value Profile="(Default)">http://rainwave.cc/api4</Value>
+    </Setting>
+    <Setting Name="RecheckTime" Type="System.TimeSpan" Scope="User">
+      <Value Profile="(Default)">00:30:00</Value>
+    </Setting>
+    <Setting Name="RequestTimeout" Type="System.TimeSpan" Scope="User">
+      <Value Profile="(Default)">00:00:10</Value>
+    </Setting>
+    <Setting Name="MinQueueSize" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">6</Value>
+    </Setting>
+    <Setting Name="AutoPauseTime" Type="System.TimeSpan" Scope="User">
+      <Value Profile="(Default)">17:00:00</Value>
+    </Setting>
+    <Setting Name="AutoUnpauseTime" Type="System.TimeSpan" Scope="User">
+      <Value Profile="(Default)">06:45:00</Value>
+    </Setting>
+    <Setting Name="DefaultStation" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">5</Value>
+    </Setting>
+    <Setting Name="ApiKey" Type="System.String" Scope="User">
+      <Value Profile="(Default)"></Value>
+    </Setting>
+    <Setting Name="VotingPrefs" Type="System.String" Scope="User">
+      <Value Profile="(Default)">VotingPreferences.xml</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

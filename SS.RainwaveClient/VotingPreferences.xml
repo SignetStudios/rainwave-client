@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<VotingPreferences>
+	<!-- My requests -->
+	<VotePreference>
+		<SortOrder>1</SortOrder>
+		<IsRequest>true</IsRequest>
+		<IsMyRequest>true</IsMyRequest>
+	</VotePreference>
+	<!-- /My requests -->
+	<!-- Unrated songs in elections -->
+	<VotePreference>
+		<SortOrder>2</SortOrder>
+		<IsRequest>true</IsRequest>
+		<SongRating>0</SongRating>
+	</VotePreference>
+	<!-- /Unrated songs in elections -->
+	<!-- Favorite songs in elections -->
+	<VotePreference>
+		<SortOrder>3</SortOrder>
+		<IsRequest>true</IsRequest>
+		<IsFavorite>true</IsFavorite>
+	</VotePreference>
+	<!-- /Favorite songs in elections -->
+	<!-- Non-favorite songs in elections -->
+	<VotePreference>
+		<SortOrder>4</SortOrder>
+		<IsRequest>true</IsRequest>
+		<SongRating>5</SongRating>
+	</VotePreference>
+	<VotePreference>
+		<SortOrder>5</SortOrder>
+		<IsRequest>true</IsRequest>
+		<SongRating>4.5</SongRating>
+	</VotePreference>
+	<VotePreference>
+		<SortOrder>6</SortOrder>
+		<IsRequest>true</IsRequest>
+		<SongRating>4</SongRating>
+	</VotePreference>
+	<VotePreference>
+		<SortOrder>7</SortOrder>
+		<IsRequest>true</IsRequest>
+		<SongRating>3.5</SongRating>
+	</VotePreference>
+	<!-- /Non-favorite songs in elections -->
+	<!-- Unrated songs -->
+	<VotePreference>
+		<SortOrder>8</SortOrder>
+		<SongRating>0</SongRating>
+	</VotePreference>
+	<!-- /Unrated songs -->
+	<!-- Favorite songs -->
+	<VotePreference>
+		<SortOrder>9</SortOrder>
+		<IsFavorite>true</IsFavorite>
+	</VotePreference>
+</VotingPreferences>
