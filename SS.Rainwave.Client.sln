@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26403.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SS.RainwaveClient", "SS.RainwaveClient\SS.RainwaveClient.csproj", "{6C22364E-E93E-47AC-A6C4-D259C17DAA49}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SS.Rainwave.Client.Console", "SS.Rainwave.Client.Console\SS.Rainwave.Client.Console.csproj", "{6C22364E-E93E-47AC-A6C4-D259C17DAA49}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SS.Rainwave", "SS.Rainwave\SS.Rainwave.csproj", "{838A206F-369D-4B5B-88F7-F4A8BAD021F5}"
 EndProject

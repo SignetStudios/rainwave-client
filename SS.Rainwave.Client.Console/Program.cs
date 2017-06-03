@@ -1,14 +1,13 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading;
-using SS.RainwaveClient.Properties;
 using System.Xml.Linq;
-using System.IO;
 using log4net;
-using SS.Rainwave;
+using SS.Rainwave.Client.Console.Properties;
 using SS.Rainwave.Objects;
 
-namespace SS.RainwaveClient
+namespace SS.Rainwave.Client.Console
 {
 	public class Program
 	{
@@ -20,7 +19,7 @@ namespace SS.RainwaveClient
 
 		public static void Main()
 		{
-			Console.SetWindowSize(75, 30);
+			System.Console.SetWindowSize(75, 30);
 
 			var work = new Workhorse();
 
@@ -51,7 +50,7 @@ namespace SS.RainwaveClient
 
 			do
 			{
-				con = Console.ReadLine();
+				con = System.Console.ReadLine();
 
 				if (!string.IsNullOrWhiteSpace(con))
 				{
