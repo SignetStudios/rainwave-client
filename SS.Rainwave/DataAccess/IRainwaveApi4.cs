@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using SS.Rainwave.Objects.API;
 
 namespace SS.Rainwave.DataAccess
 {
@@ -14,7 +15,7 @@ namespace SS.Rainwave.DataAccess
 		Task<List<Artist>> AllArtists(SiteId siteId);
 		Task<List<Song>> AllFaves(int perPage = 0, int pageStart = 0);
 		Task<List<Group>> AllGroups(SiteId siteId, int perPage = 0, int pageStart = 0);
-		Task<List<Song>> AllSongs(Order sortOrder, int perPage = 0, int pageStart = 0);
+		Task<List<Song>> AllSongs(SortOrder sortOrder, int perPage = 0, int pageStart = 0);
 		Task<Artist> Artist(SiteId siteId, int artistId);
 		Task<bool> ClearRating(SiteId siteId, int songId);
 		Task<bool> ClearRequests();

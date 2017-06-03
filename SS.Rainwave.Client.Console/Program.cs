@@ -6,6 +6,7 @@ using System.Xml.Linq;
 using log4net;
 using SS.Rainwave.Client.Console.Properties;
 using SS.Rainwave.Objects;
+using SS.Rainwave.Objects.API;
 
 namespace SS.Rainwave.Client.Console
 {

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using log4net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SS.Rainwave.Objects.API;
 
 namespace SS.Rainwave.DataAccess
 {
@@ -130,7 +131,7 @@ namespace SS.Rainwave.DataAccess
 			}
 		}
 
-		public async Task<List<Song>> AllSongs(Order sortOrder, int perPage = 0, int pageStart = 0)
+		public async Task<List<Song>> AllSongs(SortOrder sortOrder, int perPage = 0, int pageStart = 0)
 		{
 			var parms = new Dictionary<string, string>
 			            {

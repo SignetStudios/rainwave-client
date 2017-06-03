@@ -51,12 +51,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Objects\API\Artist.cs" />
     <Compile Include="DataAccess\IRainwaveApi4.cs" />
     <Compile Include="DataAccess\RainwaveApi4.cs" />
+    <Compile Include="Objects\API\Album.cs" />
+    <Compile Include="Objects\API\Donation.cs" />
+    <Compile Include="Objects\API\Group.cs" />
+    <Compile Include="Objects\API\Info.cs" />
+    <Compile Include="Objects\API\Listeners.cs" />
+    <Compile Include="Objects\API\SortOrder.cs" />
+    <Compile Include="Objects\API\Request.cs" />
+    <Compile Include="Objects\API\ScheduleItem.cs" />
+    <Compile Include="Objects\API\Search.cs" />
+    <Compile Include="Objects\API\SiteId.cs" />
+    <Compile Include="Objects\API\Song.cs" />
+    <Compile Include="Objects\API\User.cs" />
+    <Compile Include="Objects\API\Vote.cs" />
     <Compile Include="Objects\VotePriority.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RainwaveClient.cs" />
-    <Compile Include="RainwaveObjects.cs" />
+    <Compile Include="Objects\API\Station.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

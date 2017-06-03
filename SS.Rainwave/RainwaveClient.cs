@@ -5,6 +5,7 @@ using System.Linq;
 using log4net;
 using SS.Rainwave.DataAccess;
 using SS.Rainwave.Objects;
+using SS.Rainwave.Objects.API;
 
 namespace SS.Rainwave
 {
@@ -47,7 +48,6 @@ namespace SS.Rainwave
 		private readonly IRainwaveApi4 _rainwaveApi;
 
 		private static readonly ILog Log = LogManager.GetLogger(typeof(RainwaveClient));
-		//private readonly Action<string, int?> _textLogger;
 
 		public RainwaveClient(string apiEndpoint, string userId, string apiKey, SiteId defaultSite) 
 			: this(new RainwaveApi4(apiEndpoint, userId, apiKey), defaultSite)
