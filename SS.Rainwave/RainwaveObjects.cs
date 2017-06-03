@@ -2,7 +2,7 @@
 using System.Linq;
 using Newtonsoft.Json;
 
-namespace SS.RainwaveClient.Rainwave
+namespace SS.Rainwave
 {
 	public enum Order
 	{
@@ -226,7 +226,8 @@ namespace SS.RainwaveClient.Rainwave
 		[JsonProperty(PropertyName = "user")]
 		public User User { get; set; }
 
-		[JsonProperty(PropertyName = "already_voted")] private List<List<int>> _voteInfo;
+		[JsonProperty(PropertyName = "already_voted")]
+		private List<List<int>> _voteInfo;
 
 		public List<Vote> AlreadyVoted => _voteInfo.Select(x => new Vote {ElectionId = x[0], SongId = x[1]}).ToList();
 

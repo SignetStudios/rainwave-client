@@ -8,19 +8,13 @@ using System.Threading.Tasks;
 using log4net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SS.RainwaveClient.Properties;
 
-namespace SS.RainwaveClient.Rainwave.DataAccess
+namespace SS.Rainwave.DataAccess
 {
 	public class RainwaveApi4 : IRainwaveApi4
 	{
 		private static readonly ILog Log = LogManager.GetLogger(typeof(RainwaveApi4));
-
-		public RainwaveApi4()
-			: this(Settings.Default.BaseApiUrl, Settings.Default.UserId, Settings.Default.ApiKey)
-		{
-		}
-
+		
 		internal RainwaveApi4(string apiEndpoint, string userId, string apiKey)
 		{
 			ApiEndpoint = apiEndpoint;

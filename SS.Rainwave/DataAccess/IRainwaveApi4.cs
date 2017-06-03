@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SS.RainwaveClient.Rainwave.DataAccess
+namespace SS.Rainwave.DataAccess
 {
 	public interface IRainwaveApi4
 	{

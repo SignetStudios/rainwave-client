@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using log4net;
-using SS.RainwaveClient.Rainwave.DataAccess;
+using SS.Rainwave.DataAccess;
+using SS.Rainwave.Objects;
 
-namespace SS.RainwaveClient.Rainwave
+namespace SS.Rainwave
 {
 	public interface IRainwaveClient
 	{
@@ -48,8 +49,10 @@ namespace SS.RainwaveClient.Rainwave
 		private static readonly ILog Log = LogManager.GetLogger(typeof(RainwaveClient));
 		//private readonly Action<string, int?> _textLogger;
 
-		public RainwaveClient(SiteId defaultSite) : this(new RainwaveApi4(), defaultSite)
+		public RainwaveClient(string apiEndpoint, string userId, string apiKey, SiteId defaultSite) 
+			: this(new RainwaveApi4(apiEndpoint, userId, apiKey), defaultSite)
 		{
+			
 		}
 
 		internal RainwaveClient(IRainwaveApi4 rainwaveApi, SiteId currentSite)

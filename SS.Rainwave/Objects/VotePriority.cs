@@ -1,4 +1,4 @@
-﻿namespace SS.RainwaveClient
+﻿namespace SS.Rainwave.Objects
 {
 	public class VotePriority
 	{

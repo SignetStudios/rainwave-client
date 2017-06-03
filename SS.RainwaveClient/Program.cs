@@ -2,10 +2,11 @@
 using System.Linq;
 using System.Threading;
 using SS.RainwaveClient.Properties;
-using SS.RainwaveClient.Rainwave;
 using System.Xml.Linq;
 using System.IO;
 using log4net;
+using SS.Rainwave;
+using SS.Rainwave.Objects;
 
 namespace SS.RainwaveClient
 {
@@ -89,7 +90,7 @@ namespace SS.RainwaveClient
 		public bool StopWork { get; set; }
 
 
-		public Workhorse() : this(new Rainwave.RainwaveClient((SiteId) Settings.Default.DefaultStation))
+		public Workhorse() : this(new Rainwave.RainwaveClient(Settings.Default.BaseApiUrl, Settings.Default.UserId, Settings.Default.ApiKey, (SiteId) Settings.Default.DefaultStation))
 		{
 		}
 
