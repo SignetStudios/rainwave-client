@@ -24,7 +24,7 @@ namespace SS.RainwaveClient
 			var work = new Workhorse();
 
 			log.Info("Starting RW Interface.");
-			log.Info("Input anything to stop the process and clear the queue.");
+			log.Info("Hit enter to pause or unpause the request queue.");
 
 			ThreadPool.QueueUserWorkItem(work.ExecuteWork);
 
