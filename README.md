@@ -43,7 +43,7 @@ Voting preferences can be adjusted in the `VotingPreferences.xml` file. The file
 
 All nodes except `SortOrder` are optional, so can be mixed and matched as desired.
 
-For every eligible election that you have not already voted in, the client goes through each song in the election and matches it with the first `VotePreference` entry it can find. The songs are then ordered by:
+For every eligible election that you have not already voted in, the client goes through each song in the election and matches it with the `VotePreference` with the lowest `SortOrder` entry it can find. The songs are then ordered by:
 - The `SortOrder` of the found VotePreference (ascending) (if one was not found, a higher value is used)
 - The current song rating (descending) 
 - The current album rating (descending)
