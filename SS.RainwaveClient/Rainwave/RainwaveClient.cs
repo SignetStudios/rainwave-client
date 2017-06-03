@@ -10,7 +10,7 @@ namespace SS.RainwaveClient.Rainwave
 	public interface IRainwaveClient
 	{
 		#region Properties
-		
+
 		SiteId CurrentSite { get; }
 		List<VotePriority> VotePriorities { get; set; }
 		DateTime VotePrioritiesLoaded { get; set; }
@@ -18,7 +18,7 @@ namespace SS.RainwaveClient.Rainwave
 		#endregion
 
 		#region Basic Functions
-		
+
 		bool ClearRequestQueue();
 		bool PauseRequestQueue(SiteId siteId);
 		bool UnpauseRequestQueue(SiteId siteId);
@@ -28,7 +28,7 @@ namespace SS.RainwaveClient.Rainwave
 		Info Sync(SiteId siteId, int knownEventId = -1);
 		bool DeleteRequest(int songId, SiteId siteId);
 		bool RequestUnratedSongs(SiteId siteId);
-		
+
 		#endregion
 
 		#region Advanced Functions
@@ -44,9 +44,10 @@ namespace SS.RainwaveClient.Rainwave
 	public class RainwaveClient : IRainwaveClient
 	{
 		private readonly IRainwaveApi4 _rainwaveApi;
-		private static readonly ILog log = LogManager.GetLogger(typeof(RainwaveClient));
+
+		private static readonly ILog Log = LogManager.GetLogger(typeof(RainwaveClient));
 		//private readonly Action<string, int?> _textLogger;
-		
+
 		public RainwaveClient(SiteId defaultSite) : this(new RainwaveApi4(), defaultSite)
 		{
 		}
@@ -94,7 +95,7 @@ namespace SS.RainwaveClient.Rainwave
 		{
 			var info = _rainwaveApi.Info(siteId).Result;
 
-			if (info?.User == null) 
+			if (info?.User == null)
 				return info;
 
 			if (checkStation)
@@ -120,7 +121,7 @@ namespace SS.RainwaveClient.Rainwave
 			if (info?.User == null)
 				return info;
 
-			lock(_siteLock)
+			lock (_siteLock)
 			{
 				CheckStation();
 			}
@@ -152,7 +153,7 @@ namespace SS.RainwaveClient.Rainwave
 
 			foreach (var song in cooldownList.Where(song => DeleteRequest(song.Id, info.User.Sid)))
 			{
-				log.Debug($"Removed: {song.Title}");
+				Log.Debug($"Removed: {song.Title}");
 			}
 
 			return true;
@@ -162,36 +163,39 @@ namespace SS.RainwaveClient.Rainwave
 		public bool AutoVote(Info info)
 		{
 			if (info?.SchedNext == null || !info.SchedNext.Any()) return false;
-			if (VotePriorities == null || !VotePriorities.Any()) throw new InvalidOperationException("Cannot auto vote while VotePriorities is undefined.");
+			if (VotePriorities == null || !VotePriorities.Any())
+				throw new InvalidOperationException("Cannot auto vote while VotePriorities is undefined.");
 
-			foreach (var election in info.SchedNext.Where(x => x.VotingAllowed && info.AlreadyVoted.All(y => y.ElectionId != x.Id)))
+			foreach (var election in info.SchedNext.Where(x => x.VotingAllowed &&
+			                                                   info.AlreadyVoted.All(y => y.ElectionId != x.Id)))
 			{
 				var bestSong = election.Songs
 					.Select(song => new
-					{
-						Song = song,
-						Priority =
-							VotePriorities.FirstOrDefault(
-								x => (x.IsMyRequest == null || x.IsMyRequest == (song.ElecRequestUserId == _rainwaveApi.UserId)) &&
-								     (x.IsRequest == null || x.IsRequest == !string.IsNullOrEmpty(song.ElecRequestUsername)) &&
-								     (x.SongRating == null || x.SongRating == song.RatingUser) &&
-								     (x.IsFavorite == null || x.IsFavorite == song.Fave))
-					})
+					                {
+						                Song = song,
+						                Priority =
+						                VotePriorities.FirstOrDefault(
+							                x => (x.IsMyRequest == null || x.IsMyRequest ==
+							                      (song.ElecRequestUserId == _rainwaveApi.UserId)) &&
+							                     (x.IsRequest == null || x.IsRequest == !string.IsNullOrEmpty(song.ElecRequestUsername)) &&
+							                     (x.SongRating == null || x.SongRating == song.RatingUser) &&
+							                     (x.IsFavorite == null || x.IsFavorite == song.Fave))
+					                })
 					.Select(x =>
-					{
-						//This just writes the priority information out as a debug statement. 
-						// It can be commented out or removed if desired.
-						log.Debug($"{x.Song.Title}: {x.Priority?.SortOrder ?? VotePriorities.Count + 1} ({x.Song.RatingUser})");
-						return x;
-					})
+					        {
+						        //This just writes the priority information out as a debug statement. 
+						        // It can be commented out or removed if desired.
+						        Log.Debug($"{x.Song.Title}: {x.Priority?.SortOrder ?? VotePriorities.Count + 1} ({x.Song.RatingUser})");
+						        return x;
+					        })
 					.OrderBy(x => x.Priority?.SortOrder ?? int.MaxValue)
 					.ThenByDescending(x => x.Song.RatingUser)
 					.ThenByDescending(x => x.Song.Albums.OrderByDescending(y => y.RatingUser).FirstOrDefault()?.RatingUser)
 					.Select(x => x.Song)
 					.First();
-				
+
 				if (_rainwaveApi.Vote(CurrentSite, bestSong.EntryId).Result)
-					log.Info($"Voted:   {bestSong.Title}", null);
+					Log.Info($"Voted:   {bestSong.Title}", null);
 			}
 
 			return true;
@@ -229,14 +233,14 @@ namespace SS.RainwaveClient.Rainwave
 				if (lockSidInfo.User.TunedIn)
 				{
 					CurrentSite = lockSidInfo.User.Sid;
-					log.Warn($"Switched stations from {currentInfo.User.Sid} to {CurrentSite}");
+					Log.Warn($"Switched stations from {currentInfo.User.Sid} to {CurrentSite}");
 					return;
 				}
 
 			}
 
 			//We're looking for the site that says the user is logged in to.
-			var site = Enum.GetValues(typeof (SiteId))
+			var site = Enum.GetValues(typeof(SiteId))
 				.Cast<SiteId>()
 				.Select(x => GetInfo(x, false))
 				.SingleOrDefault(info => info.User.TunedIn);
@@ -247,13 +251,7 @@ namespace SS.RainwaveClient.Rainwave
 			}
 
 			CurrentSite = site.User.Sid;
-			log.Warn($"Switched stations from {currentInfo.User.Sid} to {CurrentSite}");
-		}
-
-		private class BestSong
-		{
-			public Song Song { get; set; }
-			public int Ranking { get; set; }
+			Log.Warn($"Switched stations from {currentInfo.User.Sid} to {CurrentSite}");
 		}
 	}
 }

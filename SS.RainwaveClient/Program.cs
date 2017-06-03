@@ -1,19 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using SS.RainwaveClient.Properties;
 using SS.RainwaveClient.Rainwave;
 using System.Xml.Linq;
 using System.IO;
-using System.Xml;
 using log4net;
 
 namespace SS.RainwaveClient
 {
 	public class Program
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof (Program));
+		private static readonly ILog Log = LogManager.GetLogger(typeof(Program));
+		private static Timer _autoPause;
+		private static Timer _autoUnPause;
 
 		#region Public Static Members
 
@@ -23,8 +23,8 @@ namespace SS.RainwaveClient
 
 			var work = new Workhorse();
 
-			log.Info("Starting RW Interface.");
-			log.Info("Hit enter to pause or unpause the request queue.");
+			Log.Info("Starting RW Interface.");
+			Log.Info("Hit enter to pause or unpause the request queue.");
 
 			ThreadPool.QueueUserWorkItem(work.ExecuteWork);
 
@@ -36,47 +36,58 @@ namespace SS.RainwaveClient
 
 			pauseTime += pauseTime.TotalSeconds < 0 ? new TimeSpan(1, 0, 0, 0) : new TimeSpan(0); //Adjust to next runtime
 			unpauseTime += unpauseTime.TotalSeconds < 0 ? new TimeSpan(1, 0, 0, 0) : new TimeSpan(0); //Adjust to next runtime
-			
-			var autoPause = new Timer(work.AutoPauseRequestQueue, null, pauseTime, new TimeSpan(1, 0, 0, 0));
-			var autoUnPause = new Timer(work.AutoUnpauseRequestQueue, null, unpauseTime, new TimeSpan(1, 0, 0, 0));
 
-			log.Info($"Auto pause delayed until {curDateTime.Add(pauseTime)}.");
-			log.Info($"Auto unpause delayed until {curDateTime.Add(unpauseTime)}.");
+			_autoPause = new Timer(work.AutoPauseRequestQueue, null, pauseTime, new TimeSpan(1, 0, 0, 0));
+			_autoUnPause = new Timer(work.AutoUnpauseRequestQueue, null, unpauseTime, new TimeSpan(1, 0, 0, 0));
+
+			Log.Info($"Auto pause delayed until {curDateTime.Add(pauseTime)}.");
+			Log.Info($"Auto unpause delayed until {curDateTime.Add(unpauseTime)}.");
 
 			string con;
 			var isPaused = work.IsPaused();
 
-			log.Info($"Requests currently {(isPaused ? "" : "un")}paused.");
+			Log.Info($"Requests currently {(isPaused ? "" : "un")}paused.");
 
 			do
 			{
 				con = Console.ReadLine();
 
-				if (!string.IsNullOrWhiteSpace(con)) break;
+				if (!string.IsNullOrWhiteSpace(con))
+				{
+					continue;
+				}
 
 				isPaused = work.IsPaused();
-				
-				if (isPaused) work.UnpauseRequestQueue();
-				if (!isPaused) work.PauseRequestQueue();
 
-				log.Info($"Requests {(!isPaused ? "" : "un")}paused");
+				if (isPaused)
+				{
+					work.UnpauseRequestQueue();
+				}
+				else
+				{
+					work.PauseRequestQueue();
+				}
+
+				Log.Info($"Requests {(!isPaused ? "" : "un")}paused");
 
 			} while (string.IsNullOrWhiteSpace(con));
 
 			work.StopWork = true;
 			work.AutoPauseRequestQueue(null);
+			_autoPause.Dispose();
+			_autoUnPause.Dispose();
 		}
 
-		#endregion		
+		#endregion
 	}
 
 	internal class Workhorse
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(Workhorse));
+		private static readonly ILog Log = LogManager.GetLogger(typeof(Workhorse));
 
 		private readonly IRainwaveClient _client;
 		public bool StopWork { get; set; }
-	
+
 
 		public Workhorse() : this(new Rainwave.RainwaveClient((SiteId) Settings.Default.DefaultStation))
 		{
@@ -94,10 +105,13 @@ namespace SS.RainwaveClient
 
 		public void AutoPauseRequestQueue(object timerObj)
 		{
-			if (IsPaused()) return;
+			if (IsPaused())
+			{
+				return;
+			}
 
 			PauseRequestQueue();
-			log.Info("Request queue auto paused.");
+			Log.Info("Request queue auto paused.");
 		}
 
 		public void PauseRequestQueue()
@@ -107,10 +121,13 @@ namespace SS.RainwaveClient
 
 		public void AutoUnpauseRequestQueue(object timerObj)
 		{
-			if (!IsPaused()) return;
+			if (!IsPaused())
+			{
+				return;
+			}
 
 			UnpauseRequestQueue();
-			log.Info("Request queue auto unpaused.");
+			Log.Info("Request queue auto unpaused.");
 		}
 
 		public void UnpauseRequestQueue()
@@ -123,19 +140,22 @@ namespace SS.RainwaveClient
 		{
 			return _client.IsPaused();
 		}
-		
+
 		public void ExecuteWork(object state)
 		{
 			var info = _client.GetInfo(_client.CurrentSite);
 
-			UpdateRequestQueue(info);
-			Vote(_client.GetInfo(_client.CurrentSite));
+			updateRequestQueue(info);
+			vote(_client.GetInfo(_client.CurrentSite));
 
 			while (!StopWork)
 			{
 				var sync = _client.Sync(_client.CurrentSite);
 
-				if (sync?.User == null) continue;
+				if (sync?.User == null)
+				{
+					continue;
+				}
 
 				if (!IsPaused() && !sync.User.TunedIn)
 				{
@@ -144,23 +164,28 @@ namespace SS.RainwaveClient
 
 				if (IsPaused()) continue;
 
-				if (sync.SchedNext == null || !sync.SchedNext.Any()) continue;
+				if (sync.SchedNext == null || !sync.SchedNext.Any())
+				{
+					continue;
+				}
 
-				UpdateRequestQueue(sync);
+				updateRequestQueue(sync);
 
 				if (sync.User.TunedIn)
-					Vote(sync);
+				{
+					vote(sync);
+				}
 			}
 		}
 
-		private void Vote(Info info)
+		private void vote(Info info)
 		{
-			LoadVotePriorities();
+			loadVotePriorities();
 
 			_client.AutoVote(info);
 		}
 
-		private void LoadVotePriorities()
+		private void loadVotePriorities()
 		{
 			if (_client.VotePriorities != null &&
 			    File.GetLastWriteTime(Settings.Default.VotingPrefs) <= _client.VotePrioritiesLoaded)
@@ -171,44 +196,54 @@ namespace SS.RainwaveClient
 			var fileContents = XDocument.Load(Settings.Default.VotingPrefs);
 
 			if (fileContents.Root == null)
+			{
 				return;
-				
+			}
+
 			var tempList = fileContents.Root.Elements()
 				.Select(element => new
-				{
-					order = element?.Element("SortOrder")?.Value,
-					request = element?.Element("IsRequest")?.Value,
-					fav = element?.Element("IsFavorite")?.Value,
-					mine = element?.Element("IsMyRequest")?.Value,
-					rating = element?.Element("SongRating")?.Value
-				})
+				                   {
+					                   order = element?.Element("SortOrder")?.Value,
+					                   request = element?.Element("IsRequest")?.Value,
+					                   fav = element?.Element("IsFavorite")?.Value,
+					                   mine = element?.Element("IsMyRequest")?.Value,
+					                   rating = element?.Element("SongRating")?.Value
+				                   })
 				.Select(x => new VotePriority
-				{
-					SortOrder = int.Parse(x.order),
-					IsRequest = string.IsNullOrEmpty(x.request) ? (bool?) null : bool.Parse(x.request),
-					IsFavorite = string.IsNullOrEmpty(x.fav) ? (bool?) null : bool.Parse(x.fav),
-					IsMyRequest = string.IsNullOrEmpty(x.mine) ? (bool?) null : bool.Parse(x.mine),
-					SongRating = string.IsNullOrEmpty(x.rating) ? (decimal?) null : decimal.Parse(x.rating)
-				})
+				             {
+					             SortOrder = int.Parse(x.order),
+					             IsRequest = string.IsNullOrEmpty(x.request) ? (bool?) null : bool.Parse(x.request),
+					             IsFavorite = string.IsNullOrEmpty(x.fav) ? (bool?) null : bool.Parse(x.fav),
+					             IsMyRequest = string.IsNullOrEmpty(x.mine) ? (bool?) null : bool.Parse(x.mine),
+					             SongRating = string.IsNullOrEmpty(x.rating) ? (decimal?) null : decimal.Parse(x.rating)
+				             })
 				.OrderBy(x => x.SortOrder)
 				.ToList();
 
 
-			log.Info("Voting priorities loaded.");
+			Log.Info("Voting priorities loaded.");
 			_client.VotePriorities = tempList;
 			_client.VotePrioritiesLoaded = File.GetLastWriteTime(Settings.Default.VotingPrefs);
 		}
 
-		private void UpdateRequestQueue(Info infoResult)
+		private void updateRequestQueue(Info infoResult)
 		{
-			if (infoResult?.Requests == null) return;
+			if (infoResult?.Requests == null)
+			{
+				return;
+			}
 
 			_client.RemoveUnavailableRequests();
 
-			if (IsPaused() || infoResult.Requests.Count(x => !x.Cool) >= Settings.Default.MinQueueSize) return;
+			if (IsPaused() || infoResult.Requests.Count(x => !x.Cool) >= Settings.Default.MinQueueSize)
+			{
+				return;
+			}
 
 			if (_client.RequestUnratedSongs(_client.CurrentSite))
-				log.Info("Added requests to request queue");
+			{
+				Log.Info("Added requests to request queue");
+			}
 		}
 	}
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
 using System.Linq;
@@ -15,7 +14,7 @@ namespace SS.RainwaveClient.Rainwave.DataAccess
 {
 	public class RainwaveApi4 : IRainwaveApi4
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(RainwaveApi4));
+		private static readonly ILog Log = LogManager.GetLogger(typeof(RainwaveApi4));
 
 		public RainwaveApi4()
 			: this(Settings.Default.BaseApiUrl, Settings.Default.UserId, Settings.Default.ApiKey)
@@ -28,7 +27,7 @@ namespace SS.RainwaveClient.Rainwave.DataAccess
 			UserId = userId;
 			ApiKey = apiKey;
 		}
-		
+
 
 		public string ApiEndpoint { get; }
 
@@ -39,14 +38,14 @@ namespace SS.RainwaveClient.Rainwave.DataAccess
 		public async Task<Album> Album(SiteId siteId, int albumId)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)},
-				{"id", albumId.ToString(CultureInfo.InvariantCulture)}
-			};
+			            {
+				            {"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)},
+				            {"id", albumId.ToString(CultureInfo.InvariantCulture)}
+			            };
 
 			try
 			{
-				var result = await MakeRequest<Album>("album", parms);
+				var result = await makeRequest<Album>("album", parms);
 
 				return result;
 			}
@@ -59,15 +58,15 @@ namespace SS.RainwaveClient.Rainwave.DataAccess
 		public async Task<List<Album>> AllAlbums(SiteId siteId, int perPage = 0, int pageStart = 0)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)},
-				{"per_page", perPage.ToString() },
-				{"page_start", pageStart.ToString() }
-			};
+			            {
+				            {"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)},
+				            {"per_page", perPage.ToString()},
+				            {"page_start", pageStart.ToString()}
+			            };
 
 			try
 			{
-				var result = await MakeRequest<List<Album>>("all_albums", parms);
+				var result = await makeRequest<List<Album>>("all_albums", parms);
 
 				return result;
 			}
@@ -80,13 +79,13 @@ namespace SS.RainwaveClient.Rainwave.DataAccess
 		public async Task<List<Artist>> AllArtists(SiteId siteId)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)}
-			};
+			            {
+				            {"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)}
+			            };
 
 			try
 			{
-				var result = await MakeRequest<List<Artist>>("all_artists", parms);
+				var result = await makeRequest<List<Artist>>("all_artists", parms);
 
 				return result;
 			}
@@ -99,14 +98,14 @@ namespace SS.RainwaveClient.Rainwave.DataAccess
 		public async Task<List<Song>> AllFaves(int perPage = 0, int pageStart = 0)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"per_page", perPage.ToString(CultureInfo.InvariantCulture)},
-				{"page_start", pageStart.ToString() }
-			};
+			            {
+				            {"per_page", perPage.ToString(CultureInfo.InvariantCulture)},
+				            {"page_start", pageStart.ToString()}
+			            };
 
 			try
 			{
-				var result = await MakeRequest<List<Song>>("all_faves", parms);
+				var result = await makeRequest<List<Song>>("all_faves", parms);
 
 				return result;
 			}
@@ -119,15 +118,15 @@ namespace SS.RainwaveClient.Rainwave.DataAccess
 		public async Task<List<Group>> AllGroups(SiteId siteId, int perPage = 0, int pageStart = 0)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)},
-				{"per_page", perPage.ToString()},
-				{"page_start", pageStart.ToString() }
-			};
+			            {
+				            {"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)},
+				            {"per_page", perPage.ToString()},
+				            {"page_start", pageStart.ToString()}
+			            };
 
 			try
 			{
-				var result = await MakeRequest<List<Group>>("all_groups", parms);
+				var result = await makeRequest<List<Group>>("all_groups", parms);
 
 				return result;
 			}
@@ -140,15 +139,15 @@ namespace SS.RainwaveClient.Rainwave.DataAccess
 		public async Task<List<Song>> AllSongs(Order sortOrder, int perPage = 0, int pageStart = 0)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"order", ((int) sortOrder).ToString(CultureInfo.InvariantCulture)},
-				{"per_page", perPage.ToString() },
-				{"page_start", pageStart.ToString() }
-			};
+			            {
+				            {"order", ((int) sortOrder).ToString(CultureInfo.InvariantCulture)},
+				            {"per_page", perPage.ToString()},
+				            {"page_start", pageStart.ToString()}
+			            };
 
 			try
 			{
-				var result = await MakeRequest<List<Song>>("all_songs", parms);
+				var result = await makeRequest<List<Song>>("all_songs", parms);
 
 				return result;
 			}
@@ -161,14 +160,14 @@ namespace SS.RainwaveClient.Rainwave.DataAccess
 		public async Task<Artist> Artist(SiteId siteId, int artistId)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)},
-				{"id", artistId.ToString(CultureInfo.InvariantCulture)}
-			};
+			            {
+				            {"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)},
+				            {"id", artistId.ToString(CultureInfo.InvariantCulture)}
+			            };
 
 			try
 			{
-				var result = await MakeRequest<Artist>("artist", parms);
+				var result = await makeRequest<Artist>("artist", parms);
 
 				return result;
 			}
@@ -181,17 +180,17 @@ namespace SS.RainwaveClient.Rainwave.DataAccess
 		public async Task<bool> ClearRating(SiteId siteId, int songId)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"song_id", songId.ToString(CultureInfo.InvariantCulture)},
-				{"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)}
-			};
+			            {
+				            {"song_id", songId.ToString(CultureInfo.InvariantCulture)},
+				            {"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)}
+			            };
 
-			return await GetRequestSuccess("clear_rating", parms);
+			return await getRequestSuccess("clear_rating", parms);
 		}
 
 		public async Task<bool> ClearRequests()
 		{
-			var result = await MakeRequest("clear_requests");
+			var result = await makeRequest("clear_requests");
 
 			try
 			{
@@ -208,15 +207,15 @@ namespace SS.RainwaveClient.Rainwave.DataAccess
 		public async Task<List<User>> CurrentListeners(SiteId siteId, int perPage = 0, int pageStart = 0)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)},
-				{"per_page", perPage.ToString()},
-				{"page_start", pageStart.ToString() }
-			};
+			            {
+				            {"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)},
+				            {"per_page", perPage.ToString()},
+				            {"page_start", pageStart.ToString()}
+			            };
 
 			try
 			{
-				var result = await MakeRequest<List<User>>("current_listeners", parms);
+				var result = await makeRequest<List<User>>("current_listeners", parms);
 
 				return result;
 			}
@@ -229,49 +228,49 @@ namespace SS.RainwaveClient.Rainwave.DataAccess
 		public async Task<bool> DeleteRequest(int songId, SiteId siteId)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"song_id", songId.ToString(CultureInfo.InvariantCulture)},
-				{"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)}
-			};
+			            {
+				            {"song_id", songId.ToString(CultureInfo.InvariantCulture)},
+				            {"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)}
+			            };
 
-			return await GetRequestSuccess("delete_request", parms);
+			return await getRequestSuccess("delete_request", parms);
 		}
 
 		public async Task<bool> FaveAlbum(SiteId siteId, int albumId, bool fave)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"album_id", albumId.ToString(CultureInfo.InvariantCulture)},
-				{"fave", fave.ToString() },
-				{"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)}
-			};
+			            {
+				            {"album_id", albumId.ToString(CultureInfo.InvariantCulture)},
+				            {"fave", fave.ToString()},
+				            {"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)}
+			            };
 
-			return await GetRequestSuccess("fave_album", parms);
+			return await getRequestSuccess("fave_album", parms);
 		}
 
 		public async Task<bool> FaveSong(SiteId siteId, int songId, bool fave)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"song_id", songId.ToString(CultureInfo.InvariantCulture)},
-				{"fave", fave.ToString().ToLower()},
-				{"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)}
-			};
+			            {
+				            {"song_id", songId.ToString(CultureInfo.InvariantCulture)},
+				            {"fave", fave.ToString().ToLower()},
+				            {"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)}
+			            };
 
-			return await GetRequestSuccess("fave_song", parms);
+			return await getRequestSuccess("fave_song", parms);
 		}
 
 		public async Task<Group> Group(SiteId siteId, int groupId)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)},
-				{"id", groupId.ToString(CultureInfo.InvariantCulture)}
-			};
+			            {
+				            {"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)},
+				            {"id", groupId.ToString(CultureInfo.InvariantCulture)}
+			            };
 
 			try
 			{
-				var result = await MakeRequest<Group>("group", parms);
+				var result = await makeRequest<Group>("group", parms);
 
 				return result;
 			}
@@ -284,15 +283,15 @@ namespace SS.RainwaveClient.Rainwave.DataAccess
 		public async Task<Info> Info(SiteId siteId, bool currentListeners = false, bool allAlbums = false)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)},
-				{"current_listeners", currentListeners.ToString().ToLower()},
-				{"all_albums", allAlbums.ToString().ToLower()}
-			};
+			            {
+				            {"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)},
+				            {"current_listeners", currentListeners.ToString().ToLower()},
+				            {"all_albums", allAlbums.ToString().ToLower()}
+			            };
 
 			try
 			{
-				var result = await MakeRequest<Info>("info", parms);
+				var result = await makeRequest<Info>("info", parms);
 
 				return result;
 			}
@@ -305,15 +304,15 @@ namespace SS.RainwaveClient.Rainwave.DataAccess
 		public async Task<List<Info>> InfoAll(SiteId siteId, int perPage = 0, int pageStart = 0)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)},
-				{"per_page", perPage.ToString()},
-				{"page_start", pageStart.ToString() }
-			};
+			            {
+				            {"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)},
+				            {"per_page", perPage.ToString()},
+				            {"page_start", pageStart.ToString()}
+			            };
 
 			try
 			{
-				var result = await MakeRequest<List<Info>>("info_all", parms);
+				var result = await makeRequest<List<Info>>("info_all", parms);
 
 				return result;
 			}
@@ -326,13 +325,13 @@ namespace SS.RainwaveClient.Rainwave.DataAccess
 		public async Task<User> Listener(int id)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"id", id.ToString()}
-			};
+			            {
+				            {"id", id.ToString()}
+			            };
 
 			try
 			{
-				var result = await MakeRequest<User>("listener", parms);
+				var result = await makeRequest<User>("listener", parms);
 
 				return result;
 			}
@@ -345,36 +344,36 @@ namespace SS.RainwaveClient.Rainwave.DataAccess
 		public async Task<bool> OrderRequests(string songIdList, SiteId siteId)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"order", songIdList},
-				{"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)}
-			};
+			            {
+				            {"order", songIdList},
+				            {"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)}
+			            };
 
-			return await GetRequestSuccess("order_requests", parms);
+			return await getRequestSuccess("order_requests", parms);
 		}
 
 		public async Task<bool> PauseRequestQueue(SiteId siteId)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)}
-			};
+			            {
+				            {"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)}
+			            };
 
-			return await GetRequestSuccess("pause_request_queue", parms);
+			return await getRequestSuccess("pause_request_queue", parms);
 		}
 
 		public async Task<List<Song>> PlaybackHistory(SiteId siteId, int perPage = 0, int pageStart = 0)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)},
-				{"per_page", perPage.ToString()},
-				{"page_start", pageStart.ToString() }
-			};
+			            {
+				            {"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)},
+				            {"per_page", perPage.ToString()},
+				            {"page_start", pageStart.ToString()}
+			            };
 
 			try
 			{
-				var result = await MakeRequest<List<Song>>("playback_history", parms);
+				var result = await makeRequest<List<Song>>("playback_history", parms);
 
 				return result;
 			}
@@ -387,49 +386,49 @@ namespace SS.RainwaveClient.Rainwave.DataAccess
 		public async Task<bool> Rate(SiteId siteId, int songId, decimal rating)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"song_id", songId.ToString(CultureInfo.InvariantCulture)},
-				{"rating", rating.ToString(CultureInfo.InvariantCulture) },
-				{"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)}
-			};
+			            {
+				            {"song_id", songId.ToString(CultureInfo.InvariantCulture)},
+				            {"rating", rating.ToString(CultureInfo.InvariantCulture)},
+				            {"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)}
+			            };
 
-			return await GetRequestSuccess("rate", parms);
+			return await getRequestSuccess("rate", parms);
 		}
 
 		public async Task<bool> Request(SiteId siteId, int songId)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"song_id", songId.ToString(CultureInfo.InvariantCulture)},
-				{"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)}
-			};
+			            {
+				            {"song_id", songId.ToString(CultureInfo.InvariantCulture)},
+				            {"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)}
+			            };
 
-			return await GetRequestSuccess("request", parms);
+			return await getRequestSuccess("request", parms);
 		}
 
 		public async Task<bool> RequestFavoritedSongs(SiteId siteId, int limit = int.MaxValue)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"limit", limit.ToString(CultureInfo.InvariantCulture)},
-				{"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)}
-			};
+			            {
+				            {"limit", limit.ToString(CultureInfo.InvariantCulture)},
+				            {"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)}
+			            };
 
-			return await GetRequestSuccess("request_favorited_songs", parms);
+			return await getRequestSuccess("request_favorited_songs", parms);
 		}
 
 		public async Task<List<Request>> RequestLine(SiteId siteId, int perPage = 0, int pageStart = 0)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)},
-				{"per_page", perPage.ToString()},
-				{"page_start", pageStart.ToString() }
-			};
+			            {
+				            {"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)},
+				            {"per_page", perPage.ToString()},
+				            {"page_start", pageStart.ToString()}
+			            };
 
 			try
 			{
-				var result = await MakeRequest<List<Request>>("request_line", parms);
+				var result = await makeRequest<List<Request>>("request_line", parms);
 
 				return result;
 			}
@@ -442,26 +441,26 @@ namespace SS.RainwaveClient.Rainwave.DataAccess
 		public async Task<bool> RequestUnratedSongs(SiteId siteId, int limit = 0)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)}
-			};
+			            {
+				            {"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)}
+			            };
 
 			if (limit > 0) parms.Add("limit", limit.ToString(CultureInfo.InvariantCulture));
 
-			return await GetRequestSuccess("request_unrated_songs", parms);
+			return await getRequestSuccess("request_unrated_songs", parms);
 		}
 
 		public async Task<Search> Search(SiteId siteId, string searchString)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)},
-				{"search", searchString}
-			};
+			            {
+				            {"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)},
+				            {"search", searchString}
+			            };
 
 			try
 			{
-				var result = await MakeRequest<Search>("artist", parms);
+				var result = await makeRequest<Search>("artist", parms);
 
 				return result;
 			}
@@ -474,14 +473,14 @@ namespace SS.RainwaveClient.Rainwave.DataAccess
 		public async Task<Song> Song(SiteId siteId, int songId)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)},
-				{"id", songId.ToString(CultureInfo.InvariantCulture)}
-			};
+			            {
+				            {"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)},
+				            {"id", songId.ToString(CultureInfo.InvariantCulture)}
+			            };
 
 			try
 			{
-				var result = await MakeRequest<Song>("song", parms);
+				var result = await makeRequest<Song>("song", parms);
 
 				return result;
 			}
@@ -495,7 +494,7 @@ namespace SS.RainwaveClient.Rainwave.DataAccess
 		{
 			try
 			{
-				var rets = await MakeRequest<List<dynamic>>("station_song_count");
+				var rets = await makeRequest<List<dynamic>>("station_song_count");
 
 				return rets.ToDictionary<dynamic, SiteId, int>(ret => ret.sid, ret => ret.song_count);
 			}
@@ -508,14 +507,14 @@ namespace SS.RainwaveClient.Rainwave.DataAccess
 		public async Task<List<Station>> Stations(int perPage = 0, int pageStart = 0)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"per_page", perPage.ToString()},
-				{"page_start", pageStart.ToString() }
-			};
+			            {
+				            {"per_page", perPage.ToString()},
+				            {"page_start", pageStart.ToString()}
+			            };
 
 			try
 			{
-				var result = await MakeRequest<List<Station>>("stations", parms);
+				var result = await makeRequest<List<Station>>("stations", parms);
 
 				return result;
 			}
@@ -528,11 +527,11 @@ namespace SS.RainwaveClient.Rainwave.DataAccess
 		public async Task<Info> Sync(SiteId siteId, bool offlineAck = false, bool resync = false, int knownEventId = -1)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)},
-				{"offline_ack", offlineAck.ToString()},
-				{"resync", resync.ToString()}
-			};
+			            {
+				            {"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)},
+				            {"offline_ack", offlineAck.ToString()},
+				            {"resync", resync.ToString()}
+			            };
 
 			if (knownEventId > 0)
 			{
@@ -541,7 +540,7 @@ namespace SS.RainwaveClient.Rainwave.DataAccess
 
 			try
 			{
-				var result = await MakeRequest<Info>("sync", parms);
+				var result = await makeRequest<Info>("sync", parms);
 
 				return result;
 			}
@@ -551,17 +550,17 @@ namespace SS.RainwaveClient.Rainwave.DataAccess
 			}
 		}
 
-		public async Task<List<Donation>>  TipJar(int perPage = 0, int pageStart = 0)
+		public async Task<List<Donation>> TipJar(int perPage = 0, int pageStart = 0)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"per_page", perPage.ToString()},
-				{"page_start", pageStart.ToString() }
-			};
+			            {
+				            {"per_page", perPage.ToString()},
+				            {"page_start", pageStart.ToString()}
+			            };
 
 			try
 			{
-				var result = await MakeRequest<List<Donation>>("tip_jar", parms);
+				var result = await makeRequest<List<Donation>>("tip_jar", parms);
 
 				return result;
 			}
@@ -574,14 +573,14 @@ namespace SS.RainwaveClient.Rainwave.DataAccess
 		public async Task<List<Song>> Top100(int perPage = 0, int pageStart = 0)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"per_page", perPage.ToString()},
-				{"page_start", pageStart.ToString() }
-			};
+			            {
+				            {"per_page", perPage.ToString()},
+				            {"page_start", pageStart.ToString()}
+			            };
 
 			try
 			{
-				var result = await MakeRequest<List<Song>>("top_100", parms);
+				var result = await makeRequest<List<Song>>("top_100", parms);
 
 				return result;
 			}
@@ -594,15 +593,15 @@ namespace SS.RainwaveClient.Rainwave.DataAccess
 		public async Task<List<Song>> UnratedSongs(SiteId siteId, int perPage = 0, int pageStart = 0)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)},
-				{"per_page", perPage.ToString()},
-				{"page_start", pageStart.ToString() }
-			};
+			            {
+				            {"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)},
+				            {"per_page", perPage.ToString()},
+				            {"page_start", pageStart.ToString()}
+			            };
 
 			try
 			{
-				var result = await MakeRequest<List<Song>>("unrated_songs", parms);
+				var result = await makeRequest<List<Song>>("unrated_songs", parms);
 
 				return result;
 			}
@@ -615,23 +614,23 @@ namespace SS.RainwaveClient.Rainwave.DataAccess
 		public async Task<bool> UnpauseRequestQueue(SiteId siteId)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)}
-			};
-			return await GetRequestSuccess("unpause_request_queue", parms);
+			            {
+				            {"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)}
+			            };
+			return await getRequestSuccess("unpause_request_queue", parms);
 		}
 
 		public async Task<User> UserInfo(int perPage = 0, int pageStart = 0)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"per_page", perPage.ToString()},
-				{"page_start", pageStart.ToString() }
-			};
+			            {
+				            {"per_page", perPage.ToString()},
+				            {"page_start", pageStart.ToString()}
+			            };
 
 			try
 			{
-				var result = await MakeRequest<User>("user_info", parms);
+				var result = await makeRequest<User>("user_info", parms);
 
 				return result;
 			}
@@ -644,15 +643,15 @@ namespace SS.RainwaveClient.Rainwave.DataAccess
 		public async Task<List<Song>> UserRecentVotes(SiteId siteId, int perPage = 0, int pageStart = 0)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)},
-				{"per_page", perPage.ToString()},
-				{"page_start", pageStart.ToString() }
-			};
+			            {
+				            {"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)},
+				            {"per_page", perPage.ToString()},
+				            {"page_start", pageStart.ToString()}
+			            };
 
 			try
 			{
-				var result = await MakeRequest<List<Song>>("user_recent_votes", parms);
+				var result = await makeRequest<List<Song>>("user_recent_votes", parms);
 
 				return result;
 			}
@@ -665,15 +664,15 @@ namespace SS.RainwaveClient.Rainwave.DataAccess
 		public async Task<List<Song>> UserRequestedHistory(SiteId siteId, int perPage = 0, int pageStart = 0)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)},
-				{"per_page", perPage.ToString()},
-				{"page_start", pageStart.ToString() }
-			};
+			            {
+				            {"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)},
+				            {"per_page", perPage.ToString()},
+				            {"page_start", pageStart.ToString()}
+			            };
 
 			try
 			{
-				var result = await MakeRequest<List<Song>>("user_requested_history", parms);
+				var result = await makeRequest<List<Song>>("user_requested_history", parms);
 
 				return result;
 			}
@@ -686,13 +685,13 @@ namespace SS.RainwaveClient.Rainwave.DataAccess
 		public async Task<List<User>> UserSearch(string userName)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"username", userName}
-			};
+			            {
+				            {"username", userName}
+			            };
 
 			try
 			{
-				var result = await MakeRequest<List<User>>("user_search", parms);
+				var result = await makeRequest<List<User>>("user_search", parms);
 
 				return result;
 			}
@@ -705,17 +704,17 @@ namespace SS.RainwaveClient.Rainwave.DataAccess
 		public async Task<bool> Vote(SiteId siteId, int entryId)
 		{
 			var parms = new Dictionary<string, string>
-			{
-				{"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)},
-				{"entry_id", entryId.ToString(CultureInfo.InvariantCulture)}
-			};
+			            {
+				            {"sid", ((int) siteId).ToString(CultureInfo.InvariantCulture)},
+				            {"entry_id", entryId.ToString(CultureInfo.InvariantCulture)}
+			            };
 
-			return await GetRequestSuccess("vote", parms);
+			return await getRequestSuccess("vote", parms);
 		}
 
-		private async Task<bool> GetRequestSuccess(string url, Dictionary<string, string> additionalValues = null)
+		private async Task<bool> getRequestSuccess(string url, Dictionary<string, string> additionalValues = null)
 		{
-			var result = await MakeRequest(url, additionalValues);
+			var result = await makeRequest(url, additionalValues);
 
 			try
 			{
@@ -736,16 +735,16 @@ namespace SS.RainwaveClient.Rainwave.DataAccess
 		/// <param name="url">The specific URL endpoint to send the response to</param>
 		/// <param name="additionalValues">Any additional parameters that should be passed with the request</param>
 		/// <returns>An object T containing the response</returns>
-		private async Task<T> MakeRequest<T>(string url, Dictionary<string, string> additionalValues = null)
+		private async Task<T> makeRequest<T>(string url, Dictionary<string, string> additionalValues = null)
 			where T : class
 		{
 			var attempt = 1;
 
 			var parms = new NameValueCollection
-			{
-				{"user_id", UserId},
-				{"key", ApiKey}
-			};
+			            {
+				            {"user_id", UserId},
+				            {"key", ApiKey}
+			            };
 
 			if (additionalValues != null)
 			{
@@ -766,9 +765,9 @@ namespace SS.RainwaveClient.Rainwave.DataAccess
 
 						var responseString = Encoding.Default.GetString(response);
 						var returnVal = JsonConvert.DeserializeObject<T>(responseString, new JsonSerializerSettings
-						{
-							NullValueHandling = NullValueHandling.Ignore
-						});
+						                                                                 {
+							                                                                 NullValueHandling = NullValueHandling.Ignore
+						                                                                 });
 
 						return returnVal;
 					}
@@ -776,20 +775,20 @@ namespace SS.RainwaveClient.Rainwave.DataAccess
 					{
 						if (e.Status == WebExceptionStatus.ProtocolError)
 						{
-							var statusCode = ((HttpWebResponse)e.Response).StatusCode;
+							var statusCode = ((HttpWebResponse) e.Response).StatusCode;
 							switch (statusCode)
 							{
 								case HttpStatusCode.BadGateway:
 									//suppress BadGateway
 									break;
 								default:
-									log.Error($"Error with {url} ({statusCode})");
+									Log.Error($"Error with {url} ({statusCode})");
 									break;
 							}
 						}
 						else
 						{
-							log.Error($"Error processing request: {url}");
+							Log.Error($"Error processing request: {url}");
 						}
 					}
 				}
@@ -806,9 +805,9 @@ namespace SS.RainwaveClient.Rainwave.DataAccess
 		/// <param name="url">The specific URL endpoint to send the response to</param>
 		/// <param name="additionalValues">Any additional parameters that should be passed with the request</param>
 		/// <returns>A dynamic object representing the JSON result</returns>
-		private async Task<JObject> MakeRequest(string url, Dictionary<string, string> additionalValues = null)
+		private async Task<JObject> makeRequest(string url, Dictionary<string, string> additionalValues = null)
 		{
-			return await MakeRequest<JObject>(url, additionalValues);
+			return await makeRequest<JObject>(url, additionalValues);
 		}
 	}
 }

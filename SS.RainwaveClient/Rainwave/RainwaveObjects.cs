@@ -226,8 +226,7 @@ namespace SS.RainwaveClient.Rainwave
 		[JsonProperty(PropertyName = "user")]
 		public User User { get; set; }
 
-		[JsonProperty(PropertyName = "already_voted")]
-		private List<List<int>> _voteInfo;
+		[JsonProperty(PropertyName = "already_voted")] private List<List<int>> _voteInfo;
 
 		public List<Vote> AlreadyVoted => _voteInfo.Select(x => new Vote {ElectionId = x[0], SongId = x[1]}).ToList();
 
@@ -315,8 +314,10 @@ namespace SS.RainwaveClient.Rainwave
 	{
 		[JsonProperty(PropertyName = "albums")]
 		public List<Album> Albums { get; set; }
+
 		[JsonProperty(PropertyName = "songs")]
 		public List<Song> Songs { get; set; }
+
 		[JsonProperty(PropertyName = "artists")]
 		public List<Artist> Artists { get; set; }
 	}
@@ -326,10 +327,13 @@ namespace SS.RainwaveClient.Rainwave
 	{
 		[JsonProperty(PropertyName = "amount")]
 		public decimal Amount { get; set; }
+
 		[JsonProperty(PropertyName = "message")]
 		public string Message { get; set; }
+
 		[JsonProperty(PropertyName = "id")]
 		public int Id { get; set; }
+
 		[JsonProperty(PropertyName = "name")]
 		public string Name { get; set; }
 	}

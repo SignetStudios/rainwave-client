@@ -2,9 +2,9 @@
 {
 	public class VotePriority
 	{
-		public VotePriority() : this (false, false, null, false, 0)
+		public VotePriority() : this(false, false, null, false, 0)
 		{
-			
+
 		}
 
 		public VotePriority(bool? isRequest,
@@ -24,7 +24,7 @@
 			bool? isMyRequest,
 			int? songRating,
 			bool? isFavorite,
-			int sortOrder) : this (isRequest, isMyRequest, (double?) songRating, isFavorite, sortOrder)
+			int sortOrder) : this(isRequest, isMyRequest, (double?) songRating, isFavorite, sortOrder)
 		{
 		}
 
@@ -34,6 +34,4 @@
 		public bool? IsFavorite { get; set; }
 		public int SortOrder { get; set; }
 	}
-
-
 }
