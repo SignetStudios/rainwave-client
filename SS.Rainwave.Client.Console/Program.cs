@@ -2,11 +2,13 @@
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Xml;
 using System.Xml.Linq;
 using log4net;
 using SS.Rainwave.Client.Console.Properties;
 using SS.Rainwave.Objects;
 using SS.Rainwave.Objects.API;
+using Windows.UI.Notifications;
 
 namespace SS.Rainwave.Client.Console
 {
@@ -136,8 +138,31 @@ namespace SS.Rainwave.Client.Console
 		{
 			var info = _client.GetInfo(_client.CurrentSite);
 
-			updateRequestQueue(info);
-			vote(_client.GetInfo(_client.CurrentSite));
+			var notificationNow = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastImageAndText04);
+			var textLinesNow = notificationNow.GetElementsByTagName("text");
+
+			var currentSongNow = info.SchedCurrent.Songs[0];
+
+			var imageNow = notificationNow.GetElementsByTagName("image");
+			((Windows.Data.Xml.Dom.XmlElement)imageNow[0]).SetAttribute("src", $"http://www.rainwave.cc{currentSongNow.Albums[0].Art}_120.jpg");
+			((Windows.Data.Xml.Dom.XmlElement)imageNow[0]).SetAttribute("alt", currentSongNow.Albums[0].Name);
+
+			textLinesNow[0].InnerText = $"Now Playing {currentSongNow.Title} ({currentSongNow.RatingUser})";
+			textLinesNow[1].InnerText = $"Album: {currentSongNow.Albums[0].Name}";
+
+			if (!string.IsNullOrWhiteSpace(currentSongNow.ElecRequestUsername))
+			{
+				textLinesNow[2].InnerText = $"Requested by: {currentSongNow.ElecRequestUsername}";
+			}
+
+			var toastNow = new ToastNotification(notificationNow);
+			var toastNotifier = ToastNotificationManager.CreateToastNotifier("SS.Rainwave.Client.Console");
+			toastNotifier.Show(toastNow);
+
+			UpdateRequestQueue(info);
+			Vote(_client.GetInfo(_client.CurrentSite));
+
+
 
 			while (!StopWork)
 			{
@@ -153,30 +178,53 @@ namespace SS.Rainwave.Client.Console
 					AutoPauseRequestQueue(null);
 				}
 
-				if (IsPaused()) continue;
+				if (IsPaused())
+				{
+					continue;
+				}
+
+				var notification = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastImageAndText04);
+				var textLines = notification.GetElementsByTagName("text");
+
+				var currentSong = sync.SchedCurrent.Songs[0];
+
+				var image = notification.GetElementsByTagName("image");
+				((Windows.Data.Xml.Dom.XmlElement) image[0]).SetAttribute("src", $"http://www.rainwave.cc{currentSong.Albums[0].Art}_120.jpg");
+				((Windows.Data.Xml.Dom.XmlElement) image[0]).SetAttribute("alt", currentSong.Albums[0].Name);
+
+				textLines[0].InnerText = $"Now Playing {currentSong.Title} ({currentSong.RatingUser})";
+				textLines[1].InnerText = $"Album: {currentSong.Albums[0].Name}";
+
+				if (!string.IsNullOrWhiteSpace(currentSong.ElecRequestUsername))
+				{
+					textLines[2].InnerText = $"Requested by: {currentSong.ElecRequestUsername}";
+				}
+
+				var toast = new ToastNotification(notification);
+				toastNotifier.Show(toast);
 
 				if (sync.SchedNext == null || !sync.SchedNext.Any())
 				{
 					continue;
 				}
 
-				updateRequestQueue(sync);
+				UpdateRequestQueue(sync);
 
 				if (sync.User.TunedIn)
 				{
-					vote(sync);
+					Vote(sync);
 				}
 			}
 		}
 
-		private void vote(Info info)
+		private void Vote(Info info)
 		{
-			loadVotePriorities();
+			LoadVotePriorities();
 
 			_client.AutoVote(info);
 		}
 
-		private void loadVotePriorities()
+		private void LoadVotePriorities()
 		{
 			if (_client.VotePriorities != null &&
 			    File.GetLastWriteTime(Settings.Default.VotingPrefs) <= _client.VotePrioritiesLoaded)
@@ -217,7 +265,7 @@ namespace SS.Rainwave.Client.Console
 			_client.VotePrioritiesLoaded = File.GetLastWriteTime(Settings.Default.VotingPrefs);
 		}
 
-		private void updateRequestQueue(Info infoResult)
+		private void UpdateRequestQueue(Info infoResult)
 		{
 			if (infoResult?.Requests == null)
 			{
