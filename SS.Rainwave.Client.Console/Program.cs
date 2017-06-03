@@ -16,8 +16,6 @@ namespace SS.Rainwave.Client.Console
 		private static Timer _autoPause;
 		private static Timer _autoUnPause;
 
-		#region Public Static Members
-
 		public static void Main()
 		{
 			System.Console.SetWindowSize(75, 30);
@@ -78,8 +76,6 @@ namespace SS.Rainwave.Client.Console
 			_autoPause.Dispose();
 			_autoUnPause.Dispose();
 		}
-
-		#endregion
 	}
 
 	internal class Workhorse
@@ -90,7 +86,7 @@ namespace SS.Rainwave.Client.Console
 		public bool StopWork { get; set; }
 
 
-		public Workhorse() : this(new Rainwave.RainwaveClient(Settings.Default.BaseApiUrl, Settings.Default.UserId, Settings.Default.ApiKey, (SiteId) Settings.Default.DefaultStation))
+		public Workhorse() : this(new RainwaveClient(Settings.Default.BaseApiUrl, Settings.Default.UserId, Settings.Default.ApiKey, (SiteId) Settings.Default.DefaultStation))
 		{
 		}
 
@@ -98,12 +94,7 @@ namespace SS.Rainwave.Client.Console
 		{
 			_client = rainwaveClient;
 		}
-
-		public void ClearRequestQueue()
-		{
-			_client.ClearRequestQueue();
-		}
-
+		
 		public void AutoPauseRequestQueue(object timerObj)
 		{
 			if (IsPaused())
@@ -134,7 +125,6 @@ namespace SS.Rainwave.Client.Console
 		public void UnpauseRequestQueue()
 		{
 			_client.UnpauseRequestQueue(_client.CurrentSite);
-			//_client.FixRequestList(_client.GetInfo(_client.CurrentSite));
 		}
 
 		public bool IsPaused()
