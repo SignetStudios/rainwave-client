@@ -101,13 +101,17 @@ namespace SS.Rainwave
 			if (info?.User == null)
 				return info;
 
-			if (checkStation)
+			if (!checkStation)
 			{
-				lock (_siteLock)
-				{
-					CheckStation();
-				}
+				return info;
 			}
+
+			lock (_siteLock)
+			{
+				CheckStation();
+			}
+
+			info = _rainwaveApi.Info(CurrentSite).Result;
 
 			return info;
 		}
