@@ -2,8 +2,8 @@
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Xml;
 using System.Xml.Linq;
+using Windows.Data.Xml.Dom;
 using log4net;
 using SS.Rainwave.Client.Console.Properties;
 using SS.Rainwave.Objects;
@@ -143,15 +143,16 @@ namespace SS.Rainwave.Client.Console
 				_toastNotifier = ToastNotificationManager.CreateToastNotifier("SS.Rainwave.Client.Console");
 			}
 
-
 			var notification = ToastNotificationManager.GetTemplateContent(withImage ? ToastTemplateType.ToastImageAndText04 : ToastTemplateType.ToastText04);
 
 			var currentSong = songInfo.SchedCurrent.Songs[0];
 
 			if (withImage)
 			{
-				var notificationImage = (Windows.Data.Xml.Dom.XmlElement) notification.GetElementsByTagName("image")[0];
-				notificationImage.SetAttribute("src", $"http://www.rainwave.cc{currentSong.Albums[0].Art}_120.jpg");
+				var image = $"http://www.rainwave.cc{currentSong.Albums[0].Art}_120.jpg";
+				
+				var notificationImage = (XmlElement) notification.GetElementsByTagName("image")[0];
+				notificationImage.SetAttribute("src", image);
 				notificationImage.SetAttribute("alt", currentSong.Albums[0].Name);
 			}
 
@@ -165,7 +166,11 @@ namespace SS.Rainwave.Client.Console
 				notificationLines[2].InnerText = $"Requested by: {currentSong.ElecRequestUsername}";
 			}
 
-			var toastNotification = new ToastNotification(notification);
+			var toastNotification = new ToastNotification(notification)
+				{
+					ExpirationTime = DateTimeOffset.Now.AddSeconds(currentSong.Length)
+				};
+			
 			_toastNotifier.Show(toastNotification);
 
 		}
