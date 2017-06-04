@@ -188,6 +188,8 @@ namespace SS.Rainwave.Client.Console
 					continue;
 				}
 
+				ToastSong(sync);
+
 				if (!IsPaused() && !sync.User.TunedIn)
 				{
 					AutoPauseRequestQueue(null);
@@ -198,7 +200,6 @@ namespace SS.Rainwave.Client.Console
 					continue;
 				}
 
-				ToastSong(sync);
 
 				if (sync.SchedNext == null || !sync.SchedNext.Any())
 				{
