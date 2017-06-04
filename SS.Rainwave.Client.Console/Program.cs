@@ -85,6 +85,8 @@ namespace SS.Rainwave.Client.Console
 		private static readonly ILog Log = LogManager.GetLogger(typeof(Workhorse));
 
 		private readonly IRainwaveClient _client;
+		private ToastNotifier _toastNotifier;
+
 		public bool StopWork { get; set; }
 
 
@@ -134,35 +136,48 @@ namespace SS.Rainwave.Client.Console
 			return _client.IsPaused();
 		}
 
+		private void ToastSong(Info songInfo, bool withImage = false)
+		{
+			if (_toastNotifier == null)
+			{
+				_toastNotifier = ToastNotificationManager.CreateToastNotifier("SS.Rainwave.Client.Console");
+			}
+
+
+			var notification = ToastNotificationManager.GetTemplateContent(withImage ? ToastTemplateType.ToastImageAndText04 : ToastTemplateType.ToastText04);
+
+			var currentSong = songInfo.SchedCurrent.Songs[0];
+
+			if (withImage)
+			{
+				var notificationImage = (Windows.Data.Xml.Dom.XmlElement) notification.GetElementsByTagName("image")[0];
+				notificationImage.SetAttribute("src", $"http://www.rainwave.cc{currentSong.Albums[0].Art}_120.jpg");
+				notificationImage.SetAttribute("alt", currentSong.Albums[0].Name);
+			}
+
+			var notificationLines = notification.GetElementsByTagName("text");
+
+			notificationLines[0].InnerText = $"Now Playing: {currentSong.Title} ({(currentSong.RatingUser == 0 ? "Unrated" : $"Rated {currentSong.RatingUser:#.0}")})";
+			notificationLines[1].InnerText = $"Album: {currentSong.Albums[0].Name}";
+
+			if (!string.IsNullOrWhiteSpace(currentSong.ElecRequestUsername))
+			{
+				notificationLines[2].InnerText = $"Requested by: {currentSong.ElecRequestUsername}";
+			}
+
+			var toastNotification = new ToastNotification(notification);
+			_toastNotifier.Show(toastNotification);
+
+		}
+
 		public void ExecuteWork(object state)
 		{
 			var info = _client.GetInfo(_client.CurrentSite);
 
-			var notificationNow = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastImageAndText04);
-			var textLinesNow = notificationNow.GetElementsByTagName("text");
-
-			var currentSongNow = info.SchedCurrent.Songs[0];
-
-			var imageNow = notificationNow.GetElementsByTagName("image");
-			((Windows.Data.Xml.Dom.XmlElement)imageNow[0]).SetAttribute("src", $"http://www.rainwave.cc{currentSongNow.Albums[0].Art}_120.jpg");
-			((Windows.Data.Xml.Dom.XmlElement)imageNow[0]).SetAttribute("alt", currentSongNow.Albums[0].Name);
-
-			textLinesNow[0].InnerText = $"Now Playing {currentSongNow.Title} ({currentSongNow.RatingUser})";
-			textLinesNow[1].InnerText = $"Album: {currentSongNow.Albums[0].Name}";
-
-			if (!string.IsNullOrWhiteSpace(currentSongNow.ElecRequestUsername))
-			{
-				textLinesNow[2].InnerText = $"Requested by: {currentSongNow.ElecRequestUsername}";
-			}
-
-			var toastNow = new ToastNotification(notificationNow);
-			var toastNotifier = ToastNotificationManager.CreateToastNotifier("SS.Rainwave.Client.Console");
-			toastNotifier.Show(toastNow);
+			ToastSong(info);
 
 			UpdateRequestQueue(info);
 			Vote(_client.GetInfo(_client.CurrentSite));
-
-
 
 			while (!StopWork)
 			{
@@ -183,25 +198,7 @@ namespace SS.Rainwave.Client.Console
 					continue;
 				}
 
-				var notification = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastImageAndText04);
-				var textLines = notification.GetElementsByTagName("text");
-
-				var currentSong = sync.SchedCurrent.Songs[0];
-
-				var image = notification.GetElementsByTagName("image");
-				((Windows.Data.Xml.Dom.XmlElement) image[0]).SetAttribute("src", $"http://www.rainwave.cc{currentSong.Albums[0].Art}_120.jpg");
-				((Windows.Data.Xml.Dom.XmlElement) image[0]).SetAttribute("alt", currentSong.Albums[0].Name);
-
-				textLines[0].InnerText = $"Now Playing {currentSong.Title} ({currentSong.RatingUser})";
-				textLines[1].InnerText = $"Album: {currentSong.Albums[0].Name}";
-
-				if (!string.IsNullOrWhiteSpace(currentSong.ElecRequestUsername))
-				{
-					textLines[2].InnerText = $"Requested by: {currentSong.ElecRequestUsername}";
-				}
-
-				var toast = new ToastNotification(notification);
-				toastNotifier.Show(toast);
+				ToastSong(sync);
 
 				if (sync.SchedNext == null || !sync.SchedNext.Any())
 				{
