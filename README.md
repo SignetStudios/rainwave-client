@@ -51,3 +51,6 @@ For every eligible election that you have not already voted in, the client goes 
 The song at the top of this list gets the final vote.
 
 Note that voting will only occur if the user's request queue is unpaused.
+
+### Developing
+For development purposes, an `App.Debug.config` for the `SS.Rainwave.Client.Console` project must be supplied. An example `App.Debug.config` is provided - simply rename the file to `App.Debug.config` (in the same folder) and add the relevant values. 
