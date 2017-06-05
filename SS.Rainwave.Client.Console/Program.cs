@@ -145,6 +145,11 @@ namespace SS.Rainwave.Client.Console
 
 			var notification = ToastNotificationManager.GetTemplateContent(withImage ? ToastTemplateType.ToastImageAndText04 : ToastTemplateType.ToastText04);
 
+			if (songInfo?.SchedCurrent?.Songs == null || songInfo.SchedCurrent.Songs.Count == 0)
+			{
+				return;
+			}
+
 			var currentSong = songInfo.SchedCurrent.Songs[0];
 
 			if (withImage)
