@@ -1,4 +1,6 @@
 ﻿using System;
+using System.CodeDom;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -35,8 +37,11 @@ namespace SS.Rainwave.Client.Console
 			var pauseTime = Settings.Default.AutoPauseTime - curTime;
 			var unpauseTime = Settings.Default.AutoUnpauseTime - curTime;
 
-			pauseTime += pauseTime.TotalSeconds < 0 ? new TimeSpan(1, 0, 0, 0) : new TimeSpan(0); //Adjust to next runtime
-			unpauseTime += unpauseTime.TotalSeconds < 0 ? new TimeSpan(1, 0, 0, 0) : new TimeSpan(0); //Adjust to next runtime
+			pauseTime +=
+				pauseTime.TotalSeconds < 0 ? new TimeSpan(1, 0, 0, 0) : new TimeSpan(0); //Adjust to next runtime
+			unpauseTime += unpauseTime.TotalSeconds < 0
+				? new TimeSpan(1, 0, 0, 0)
+				: new TimeSpan(0); //Adjust to next runtime
 
 			_autoPause = new Timer(work.AutoPauseRequestQueue, null, pauseTime, new TimeSpan(1, 0, 0, 0));
 			_autoUnPause = new Timer(work.AutoUnpauseRequestQueue, null, unpauseTime, new TimeSpan(1, 0, 0, 0));
@@ -90,7 +95,8 @@ namespace SS.Rainwave.Client.Console
 		public bool StopWork { get; set; }
 
 
-		public Workhorse() : this(new RainwaveClient(Settings.Default.BaseApiUrl, Settings.Default.UserId, Settings.Default.ApiKey, (SiteId) Settings.Default.DefaultStation))
+		public Workhorse() : this(new RainwaveClient(Settings.Default.BaseApiUrl, Settings.Default.UserId,
+			Settings.Default.ApiKey, (SiteId)Settings.Default.DefaultStation))
 		{
 		}
 
@@ -98,7 +104,7 @@ namespace SS.Rainwave.Client.Console
 		{
 			_client = rainwaveClient;
 		}
-		
+
 		public void AutoPauseRequestQueue(object timerObj)
 		{
 			if (IsPaused())
@@ -144,7 +150,9 @@ namespace SS.Rainwave.Client.Console
 				_toastNotifier = ToastNotificationManager.CreateToastNotifier("SS.Rainwave.Client.Console");
 			}
 
-			var notification = ToastNotificationManager.GetTemplateContent(withImage ? ToastTemplateType.ToastImageAndText04 : ToastTemplateType.ToastText04);
+			var notification = ToastNotificationManager.GetTemplateContent(withImage
+				? ToastTemplateType.ToastImageAndText04
+				: ToastTemplateType.ToastText04);
 
 			if (songInfo?.SchedCurrent?.Songs == null || songInfo.SchedCurrent.Songs.Count == 0)
 			{
@@ -156,15 +164,16 @@ namespace SS.Rainwave.Client.Console
 			if (withImage)
 			{
 				var image = $"http://www.rainwave.cc{currentSong.Albums[0].Art}_120.jpg";
-				
-				var notificationImage = (XmlElement) notification.GetElementsByTagName("image")[0];
+
+				var notificationImage = (XmlElement)notification.GetElementsByTagName("image")[0];
 				notificationImage.SetAttribute("src", image);
 				notificationImage.SetAttribute("alt", currentSong.Albums[0].Name);
 			}
 
 			var notificationLines = notification.GetElementsByTagName("text");
 
-			notificationLines[0].InnerText = $"Now Playing: {currentSong.Title} ({(currentSong.RatingUser == 0 ? "Unrated" : $"Rated {currentSong.RatingUser:#.0}")})";
+			notificationLines[0].InnerText =
+				$"Now Playing: {currentSong.Title} ({(currentSong.RatingUser == 0 ? "Unrated" : $"Rated {currentSong.RatingUser:#.0}")})";
 			notificationLines[1].InnerText = $"Album: {currentSong.Albums[0].Name}";
 
 			if (!string.IsNullOrWhiteSpace(currentSong.ElecRequestUsername))
@@ -173,10 +182,10 @@ namespace SS.Rainwave.Client.Console
 			}
 
 			var toastNotification = new ToastNotification(notification)
-				{
-					ExpirationTime = DateTimeOffset.Now.AddSeconds(currentSong.Length)
-				};
-			
+			{
+				ExpirationTime = DateTimeOffset.Now.AddSeconds(currentSong.Length)
+			};
+
 			_toastNotifier.Show(toastNotification);
 
 		}
@@ -233,10 +242,44 @@ namespace SS.Rainwave.Client.Console
 			_client.AutoVote(info);
 		}
 
+		private T ParseElement<T>(XElement element)
+		{
+			bool IsNullable()
+			{
+				return Nullable.GetUnderlyingType(typeof(T)) != null;
+			}
+
+			if (element == null)
+			{
+				if (!IsNullable())
+				{
+					//Type is not nullable, but element is null. 
+					throw new InvalidOperationException();
+				}
+
+				return default(T);
+			}
+
+			var converter = TypeDescriptor.GetConverter(typeof(T));
+
+			if (converter.IsValid(element.Value))
+			{
+				return (T)converter.ConvertFromString(element.Value);
+			}
+
+			if (!IsNullable())
+			{
+				//Type is not nullable, but element is null. 
+				throw new InvalidOperationException();
+			}
+
+			return default(T);
+		}
+
 		private void LoadVotePriorities()
 		{
 			if (_client.VotePriorities != null &&
-			    File.GetLastWriteTime(Settings.Default.VotingPrefs) <= _client.VotePrioritiesLoaded)
+				File.GetLastWriteTime(Settings.Default.VotingPrefs) <= _client.VotePrioritiesLoaded)
 			{
 				return;
 			}
@@ -249,23 +292,14 @@ namespace SS.Rainwave.Client.Console
 			}
 
 			var tempList = fileContents.Root.Elements()
-				.Select(element => new
-				                   {
-					                   order = element?.Element("SortOrder")?.Value,
-					                   request = element?.Element("IsRequest")?.Value,
-					                   fav = element?.Element("IsFavorite")?.Value,
-					                   mine = element?.Element("IsMyRequest")?.Value,
-					                   rating = element?.Element("SongRating")?.Value
-				                   })
 				.Select(x => new VotePriority
-				             {
-					             SortOrder = int.Parse(x.order),
-					             IsRequest = string.IsNullOrEmpty(x.request) ? (bool?) null : bool.Parse(x.request),
-					             IsFavorite = string.IsNullOrEmpty(x.fav) ? (bool?) null : bool.Parse(x.fav),
-					             IsMyRequest = string.IsNullOrEmpty(x.mine) ? (bool?) null : bool.Parse(x.mine),
-					             SongRating = string.IsNullOrEmpty(x.rating) ? (decimal?) null : decimal.Parse(x.rating)
-				             })
-				.OrderBy(x => x.SortOrder)
+				{
+					SortOrder = ParseElement<int>(x?.Element("SortOrder")),
+					IsRequest = ParseElement<bool?>(x?.Element("IsRequest")),
+					IsFavorite = ParseElement<bool?>(x?.Element("IsFavorite")),
+					IsMyRequest = ParseElement<bool?>(x?.Element("IsMyRequest")),
+					SongRating = ParseElement<decimal?>(x?.Element("SongRating"))
+				}).OrderBy(x => x.SortOrder)
 				.ToList();
 
 
