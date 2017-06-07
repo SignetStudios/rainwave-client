@@ -129,6 +129,7 @@ namespace SS.Rainwave.Client.Console
 		public void UnpauseRequestQueue()
 		{
 			_client.UnpauseRequestQueue(_client.CurrentSite);
+			Vote(_client.GetInfo(_client.CurrentSite));
 		}
 
 		public bool IsPaused()
