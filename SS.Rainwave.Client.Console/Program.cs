@@ -1,5 +1,4 @@
 ﻿using System;
-using System.CodeDom;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -8,9 +7,9 @@ using System.Xml.Linq;
 using Windows.Data.Xml.Dom;
 using log4net;
 using SS.Rainwave.Client.Console.Properties;
-using SS.Rainwave.Objects;
-using SS.Rainwave.Objects.API;
 using Windows.UI.Notifications;
+using SS.Rainwave.API.Objects;
+using SS.Rainwave.Objects;
 
 namespace SS.Rainwave.Client.Console
 {

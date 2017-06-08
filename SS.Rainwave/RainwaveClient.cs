@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using log4net;
-using SS.Rainwave.DataAccess;
+using SS.Rainwave.API;
+using SS.Rainwave.API.Objects;
 using SS.Rainwave.Objects;
-using SS.Rainwave.Objects.API;
 
 namespace SS.Rainwave
 {
@@ -49,10 +49,10 @@ namespace SS.Rainwave
 
 		private static readonly ILog Log = LogManager.GetLogger(typeof(RainwaveClient));
 
-		public RainwaveClient(string apiEndpoint, string userId, string apiKey, SiteId defaultSite) 
+		public RainwaveClient(string apiEndpoint, string userId, string apiKey, SiteId defaultSite)
 			: this(new RainwaveApi4(apiEndpoint, userId, apiKey), defaultSite)
 		{
-			
+
 		}
 
 		internal RainwaveClient(IRainwaveApi4 rainwaveApi, SiteId currentSite)
@@ -174,27 +174,27 @@ namespace SS.Rainwave
 				throw new InvalidOperationException("Cannot auto vote while VotePriorities is undefined.");
 
 			foreach (var election in info.SchedNext.Where(x => x.VotingAllowed &&
-			                                                   info.AlreadyVoted.All(y => y.ElectionId != x.Id)))
+															   info.AlreadyVoted.All(y => y.ElectionId != x.Id)))
 			{
 				var bestSong = election.Songs
 					.Select(song => new
-					                {
-						                Song = song,
-						                Priority =
-						                VotePriorities.FirstOrDefault(
-							                x => (x.IsMyRequest == null || x.IsMyRequest ==
-							                      (song.ElecRequestUserId == _rainwaveApi.UserId)) &&
-							                     (x.IsRequest == null || x.IsRequest == !string.IsNullOrEmpty(song.ElecRequestUsername)) &&
-							                     (x.SongRating == null || x.SongRating == song.RatingUser) &&
-							                     (x.IsFavorite == null || x.IsFavorite == song.Fave))
-					                })
+					{
+						Song = song,
+						Priority =
+										VotePriorities.FirstOrDefault(
+											x => (x.IsMyRequest == null || x.IsMyRequest ==
+												  (song.ElecRequestUserId == _rainwaveApi.UserId)) &&
+												 (x.IsRequest == null || x.IsRequest == !string.IsNullOrEmpty(song.ElecRequestUsername)) &&
+												 (x.SongRating == null || x.SongRating == song.RatingUser) &&
+												 (x.IsFavorite == null || x.IsFavorite == song.Fave))
+					})
 					.Select(x =>
-					        {
-						        //This just writes the priority information out as a debug statement. 
-						        // It can be commented out or removed if desired.
-						        Log.Debug($"{x.Song.Title}: {x.Priority?.SortOrder ?? VotePriorities.Count + 1} ({x.Song.RatingUser})");
-						        return x;
-					        })
+							{
+								//This just writes the priority information out as a debug statement. 
+								// It can be commented out or removed if desired.
+								Log.Debug($"{x.Song.Title}: {x.Priority?.SortOrder ?? VotePriorities.Count + 1} ({x.Song.RatingUser})");
+								return x;
+							})
 					.OrderBy(x => x.Priority?.SortOrder ?? int.MaxValue)
 					.ThenByDescending(x => x.Song.RatingUser)
 					.ThenByDescending(x => x.Song.Albums.OrderByDescending(y => y.RatingUser).FirstOrDefault()?.RatingUser)
@@ -262,3 +262,4 @@ namespace SS.Rainwave
 		}
 	}
 }
+
