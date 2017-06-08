@@ -23,7 +23,42 @@ namespace SS.Rainwave.Client.Console
 		{
 			System.Console.SetWindowSize(75, 30);
 
-			var work = new Workhorse();
+			Workhorse work = null;
+
+			bool isError;
+
+			do
+			{
+				try
+				{
+					work = new Workhorse();
+					isError = false;
+				}
+				catch (ArgumentException argException)
+				{
+					isError = true;
+					switch (argException.ParamName)
+					{
+						case "apiEndpoint":
+							System.Console.WriteLine("Invalid API Endpoint. Enter new endpoint:");
+							Settings.Default.BaseApiUrl = System.Console.ReadLine();
+							continue;
+						case "userId":
+							System.Console.WriteLine("Invalid User ID. Enter new User ID:");
+							Settings.Default.UserId = System.Console.ReadLine();
+							continue;
+						case "apiKey":
+							System.Console.WriteLine("Invalid API Key. Enter new API Key:");
+							Settings.Default.ApiKey = System.Console.ReadLine();
+							continue;
+						default:
+							throw;
+					}
+				}
+
+			} while (isError);
+
+
 
 			Log.Info("Starting RW Interface.");
 			Log.Info("Hit enter to pause or unpause the request queue.");

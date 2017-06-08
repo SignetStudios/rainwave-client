@@ -6,7 +6,7 @@
 
 	<ItemGroup>
 	  <PackageReference Include="log4net" Version="2.0.8" />
-	  <PackageReference Include="SS.Rainwave.API" Version="0.0.4" />
+	  <PackageReference Include="SS.Rainwave.API" Version="0.0.5" />
 	</ItemGroup>
 	
 </Project>
