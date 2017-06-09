@@ -84,9 +84,9 @@ namespace SS.Rainwave.Client.Console
 			Log.Info($"Auto unpause delayed until {curDateTime.Add(unpauseTime)}.");
 
 			string con;
-			var isPaused = work.IsPaused();
+			//var isPaused = work.IsPaused();
 
-			Log.Info($"Requests currently {(isPaused ? "" : "un")}paused.");
+			//Log.Info($"Requests currently {(isPaused ? "" : "un")}paused.");
 
 			do
 			{
@@ -97,7 +97,7 @@ namespace SS.Rainwave.Client.Console
 					continue;
 				}
 
-				isPaused = work.IsPaused();
+				var isPaused = work.IsPaused();
 
 				if (isPaused)
 				{
@@ -172,9 +172,9 @@ namespace SS.Rainwave.Client.Console
 			Vote(_client.GetInfo(_client.CurrentSite));
 		}
 
-		public bool IsPaused()
+		public bool IsPaused(Info info = null)
 		{
-			return _client.IsPaused();
+			return _client.IsPaused(info);
 		}
 
 		private void ToastSong(Info songInfo, bool withImage = false)
@@ -231,7 +231,7 @@ namespace SS.Rainwave.Client.Console
 			ToastSong(info);
 
 			UpdateRequestQueue(info);
-			Vote(_client.GetInfo(_client.CurrentSite));
+			Vote(info);
 
 			while (!StopWork)
 			{
@@ -244,12 +244,12 @@ namespace SS.Rainwave.Client.Console
 
 				ToastSong(sync);
 
-				if (!IsPaused() && !sync.User.TunedIn)
+				if (!IsPaused(sync) && !sync.User.TunedIn)
 				{
 					AutoPauseRequestQueue(null);
 				}
 
-				if (IsPaused())
+				if (IsPaused(sync))
 				{
 					continue;
 				}
@@ -349,9 +349,9 @@ namespace SS.Rainwave.Client.Console
 				return;
 			}
 
-			_client.RemoveUnavailableRequests();
+			_client.RemoveUnavailableRequests(infoResult);
 
-			if (IsPaused() || infoResult.Requests.Count(x => !x.Cool) >= Settings.Default.MinQueueSize)
+			if (IsPaused(infoResult) || infoResult.Requests.Count(x => !x.Cool) >= Settings.Default.MinQueueSize)
 			{
 				return;
 			}

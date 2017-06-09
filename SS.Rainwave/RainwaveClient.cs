@@ -24,7 +24,7 @@ namespace SS.Rainwave
 		bool ClearRequestQueue();
 		bool PauseRequestQueue(SiteId siteId);
 		bool UnpauseRequestQueue(SiteId siteId);
-		bool IsPaused();
+		bool IsPaused(Info info = null);
 		Info GetInfo(SiteId siteId, bool checkStation = true);
 		bool Vote(SiteId siteId, int entryId);
 		Info Sync(SiteId siteId, int knownEventId = -1);
@@ -35,10 +35,10 @@ namespace SS.Rainwave
 
 		#region Advanced Functions
 
-		bool RemoveUnavailableRequests();
+		bool RemoveUnavailableRequests(Info info = null);
 		bool AutoVote(Info info);
 		bool FixRequestList(Info info);
-		void CheckStation();
+		void CheckStation(Info info = null);
 
 		#endregion
 	}
@@ -81,14 +81,14 @@ namespace SS.Rainwave
 			return _rainwaveApi.UnpauseRequestQueue(siteId).Result;
 		}
 
-		public bool IsPaused()
+		public bool IsPaused(Info info = null)
 		{
 			var isPaused = false;
 
-			var info = GetInfo(CurrentSite);
+			var currentInfo = info ?? GetInfo(CurrentSite);
 
-			if (info?.User != null)
-				isPaused = info.User.RequestsPaused;
+			if (currentInfo?.User != null)
+				isPaused = currentInfo.User.RequestsPaused;
 
 			return isPaused;
 		}
@@ -105,9 +105,11 @@ namespace SS.Rainwave
 				return info;
 			}
 
-			lock (_siteLock)
+			CheckStation(info);
+
+			if (siteId == CurrentSite)
 			{
-				CheckStation();
+				return info;
 			}
 
 			info = _rainwaveApi.Info(CurrentSite).Result;
@@ -127,10 +129,7 @@ namespace SS.Rainwave
 			if (info?.User == null)
 				return info;
 
-			lock (_siteLock)
-			{
-				CheckStation();
-			}
+			CheckStation(info);
 
 			return info;
 		}
@@ -145,19 +144,19 @@ namespace SS.Rainwave
 			return _rainwaveApi.RequestUnratedSongs(siteId).Result;
 		}
 
-		public bool RemoveUnavailableRequests()
+		public bool RemoveUnavailableRequests(Info info = null)
 		{
-			var info = GetInfo(CurrentSite);
+			var currentInfo = info ?? GetInfo(CurrentSite);
 
-			if (info?.Requests == null || !info.Requests.Any())
+			if (currentInfo?.Requests == null || !currentInfo.Requests.Any())
 				return false;
 
-			var cooldownList = info.Requests.Where(x => x.Cool).ToList();
+			var cooldownList = currentInfo.Requests.Where(x => x.Cool).ToList();
 
 			if (!cooldownList.Any())
 				return true;
 
-			foreach (var song in cooldownList.Where(song => DeleteRequest(song.Id, info.User.Sid)))
+			foreach (var song in cooldownList.Where(song => DeleteRequest(song.Id, currentInfo.User.Sid)))
 			{
 				Log.Debug($"Removed: {song.Title}");
 			}
@@ -222,42 +221,49 @@ namespace SS.Rainwave
 			return _rainwaveApi.OrderRequests(requestOrder, info.User.Sid).Result;
 		}
 
-		public void CheckStation()
+		public void CheckStation(Info info = null)
 		{
-			var currentInfo = GetInfo(CurrentSite, false);
-
-			if (currentInfo.User.TunedIn)
+			lock (_siteLock)
 			{
-				return;
-			}
+				var currentInfo = info ?? GetInfo(CurrentSite, false);
 
-			//Try the LockSid first so we don't waste unnecessary calls
-			if (currentInfo.User.LockSid > 0 && currentInfo.User.LockSid != CurrentSite)
-			{
-				var lockSidInfo = GetInfo(currentInfo.User.LockSid, false);
-
-				if (lockSidInfo.User.TunedIn)
+				if (currentInfo.User.TunedIn)
 				{
-					CurrentSite = lockSidInfo.User.Sid;
-					Log.Warn($"Switched stations from {currentInfo.User.Sid} to {CurrentSite}");
 					return;
 				}
 
+				if (currentInfo.User.LockSid == CurrentSite)
+				{
+					return;
+				}
+
+				//Try the LockSid first so we don't waste unnecessary calls
+				if (currentInfo.User.LockSid > 0)
+				{
+					var lockSidInfo = GetInfo(currentInfo.User.LockSid, false);
+
+					if (lockSidInfo.User.TunedIn)
+					{
+						CurrentSite = lockSidInfo.User.Sid;
+						Log.Warn($"Switched stations from {currentInfo.User.Sid} to {CurrentSite}");
+						return;
+					}
+				}
+
+				//We're looking for the site that says the user is listening in to.
+				var site = Enum.GetValues(typeof(SiteId))
+					.Cast<SiteId>()
+					.Select(x => GetInfo(x, false))
+					.SingleOrDefault(x => x.User.TunedIn);
+
+				if (site == null)
+				{
+					return;
+				}
+
+				CurrentSite = site.User.Sid;
+				Log.Warn($"Switched stations from {currentInfo.User.Sid} to {CurrentSite}");
 			}
-
-			//We're looking for the site that says the user is logged in to.
-			var site = Enum.GetValues(typeof(SiteId))
-				.Cast<SiteId>()
-				.Select(x => GetInfo(x, false))
-				.SingleOrDefault(info => info.User.TunedIn);
-
-			if (site == null)
-			{
-				return;
-			}
-
-			CurrentSite = site.User.Sid;
-			Log.Warn($"Switched stations from {currentInfo.User.Sid} to {CurrentSite}");
 		}
 	}
 }
