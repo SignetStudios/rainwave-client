@@ -40,15 +40,15 @@ namespace SS.Rainwave.Client.Console
 					switch (argException.ParamName)
 					{
 						case "apiEndpoint":
-							System.Console.WriteLine("Invalid API Endpoint. Enter new endpoint:");
+							Log.Info("Invalid API Endpoint. Enter new endpoint:");
 							Settings.Default.BaseApiUrl = System.Console.ReadLine();
 							continue;
 						case "userId":
-							System.Console.WriteLine("Invalid User ID. Enter new User ID:");
+							Log.Info("Invalid User ID. Enter new User ID:");
 							Settings.Default.UserId = System.Console.ReadLine();
 							continue;
 						case "apiKey":
-							System.Console.WriteLine("Invalid API Key. Enter new API Key:");
+							Log.Info("Invalid API Key. Enter new API Key:");
 							Settings.Default.ApiKey = System.Console.ReadLine();
 							continue;
 						default:
