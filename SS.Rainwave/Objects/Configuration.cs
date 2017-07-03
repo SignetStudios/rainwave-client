@@ -6,7 +6,7 @@ namespace SS.Rainwave.Objects
 {
 	public class Configuration
 	{
-		public int UserId { get; set; }
+		public string UserId { get; set; }
 		public string BaseApiUrl { get; set; }
 		public TimeSpan RecheckTime { get; set; }
 		public TimeSpan RequestTimeout { get; set; }

@@ -31,7 +31,7 @@ namespace SS.Rainwave.Client.Console
 			{
 				try
 				{
-					work = new Workhorse();
+					work = new Workhorse(config);
 					isError = false;
 				}
 				catch (ArgumentException argException)
@@ -132,6 +132,12 @@ namespace SS.Rainwave.Client.Console
 		public Workhorse() : this(new RainwaveClient(Settings.Default.BaseApiUrl, Settings.Default.UserId,
 			Settings.Default.ApiKey, (SiteId)Settings.Default.DefaultStation))
 		{
+		}
+
+		public Workhorse(Configuration config) : this(
+			new RainwaveClient(config.BaseApiUrl, config.UserId, config.ApiKey, config.DefaultStation))
+		{
+			
 		}
 
 		internal Workhorse(IRainwaveClient rainwaveClient)
