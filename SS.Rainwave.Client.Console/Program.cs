@@ -23,6 +23,15 @@ namespace SS.Rainwave.Client.Console
 		{
 			System.Console.SetWindowSize(75, 30);
 
+			var config = YamlLoader.LoadConfiguration();
+
+			if (config == null)
+			{
+				//Migrate app.config to Yaml file
+				YamlLoader.ConvertConfiguration();
+				config = YamlLoader.LoadConfiguration();
+			}
+
 			Workhorse work = null;
 
 			bool isError;
