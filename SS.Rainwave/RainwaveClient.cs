@@ -196,6 +196,8 @@ namespace SS.Rainwave
 					.OrderBy(x => x.Priority?.SortOrder ?? int.MaxValue)
 					.ThenByDescending(x => x.Song.RatingUser)
 					.ThenByDescending(x => x.Song.Albums.OrderByDescending(y => y.RatingUser).FirstOrDefault()?.RatingUser)
+					.ThenByDescending(x => x.Song.Rating)
+					.ThenByDescending(x => x.Song.Albums.OrderByDescending(y => y.Rating).FirstOrDefault()?.Rating)
 					.Select(x => x.Song)
 					.First();
 
