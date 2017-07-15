@@ -1,6 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
+using System.Linq;
+using System.Xml.Linq;
 using log4net;
 using SS.Rainwave.API.Objects;
 using SS.Rainwave.Client.Console.Properties;
@@ -42,17 +44,25 @@ namespace SS.Rainwave.Client.Console
 				AutoUnpauseTime = Settings.Default.AutoUnpauseTime,
 				MinQueueSize = Settings.Default.MinQueueSize,
 				RecheckTime = Settings.Default.RecheckTime,
-				RequestTimeout = Settings.Default.RequestTimeout,
-				VotingPreferences = new List<VotePriority>
-				{
-					new VotePriority
-					{
-						SortOrder = 1,
-						IsRequest = true
-					}
-				}
+				RequestTimeout = Settings.Default.RequestTimeout
 			};
 
+			var fileContents = XDocument.Load(Settings.Default.VotingPrefs);
+
+			if (fileContents.Root != null)
+			{
+				config.VotingPreferences = fileContents.Root.Elements()
+						.Select(x => new VotePriority
+						             {
+							             SortOrder = ParseElement<int>(x?.Element("SortOrder")),
+							             IsRequest = ParseElement<bool?>(x?.Element("IsRequest")),
+							             IsFavorite = ParseElement<bool?>(x?.Element("IsFavorite")),
+							             IsMyRequest = ParseElement<bool?>(x?.Element("IsMyRequest")),
+							             SongRating = ParseElement<decimal?>(x?.Element("SongRating"))
+						             }).OrderBy(x => x.SortOrder)
+						.ToList();
+			}
+			
 			try
 			{
 				using (var writer = new StreamWriter(path))
@@ -66,6 +76,40 @@ namespace SS.Rainwave.Client.Console
 			{
 				LogManager.GetLogger(typeof(RainwaveClient)).Error("Could not convert to YAML configuration");
 			}
+		}
+
+		private static T ParseElement<T>(XElement element)
+		{
+			bool IsNullable()
+			{
+				return Nullable.GetUnderlyingType(typeof(T)) != null;
+			}
+
+			if (element == null)
+			{
+				if (!IsNullable())
+				{
+					//Type is not nullable, but element is null. 
+					throw new InvalidOperationException();
+				}
+
+				return default(T);
+			}
+
+			var converter = TypeDescriptor.GetConverter(typeof(T));
+
+			if (converter.IsValid(element.Value))
+			{
+				return (T)converter.ConvertFromString(element.Value);
+			}
+
+			if (!IsNullable())
+			{
+				//Type is not nullable, but element is null. 
+				throw new InvalidOperationException();
+			}
+
+			return default(T);
 		}
 	}
 }
