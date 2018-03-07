@@ -28,6 +28,6 @@ namespace SS.Rainwave.Objects.API
 		[JsonProperty(PropertyName = "already_voted")]
 		private List<List<int>> _voteInfo;
 
-		public List<Vote> AlreadyVoted => _voteInfo.Select(x => new Vote {ElectionId = x[0], SongId = x[1]}).ToList();
+		public List<Vote> AlreadyVoted => _voteInfo?.Select(x => new Vote { ElectionId = x[0], SongId = x[1] }).ToList() ?? new List<Vote>();
 	}
 }
