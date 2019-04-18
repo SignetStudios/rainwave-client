@@ -4,12 +4,12 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Xml.Linq;
-using Windows.Data.Xml.Dom;
 using log4net;
 using SS.Rainwave.Client.Console.Properties;
 using Windows.UI.Notifications;
 using SS.Rainwave.API.Objects;
 using SS.Rainwave.Objects;
+using SS.Rainwave.Objects.API;
 
 namespace SS.Rainwave.Client.Console
 {
@@ -124,7 +124,6 @@ namespace SS.Rainwave.Client.Console
 		private static readonly ILog Log = LogManager.GetLogger(typeof(Workhorse));
 
 		private readonly IRainwaveClient _client;
-		private ToastNotifier _toastNotifier;
 
 		public bool StopWork { get; set; }
 
@@ -177,59 +176,11 @@ namespace SS.Rainwave.Client.Console
 			return _client.IsPaused(info);
 		}
 
-		private void ToastSong(Info songInfo, bool withImage = false)
-		{
-			if (_toastNotifier == null)
-			{
-				_toastNotifier = ToastNotificationManager.CreateToastNotifier("SS.Rainwave.Client.Console");
-			}
-
-			var notification = ToastNotificationManager.GetTemplateContent(withImage
-				? ToastTemplateType.ToastImageAndText04
-				: ToastTemplateType.ToastText04);
-
-			if (songInfo?.SchedCurrent?.Songs == null || songInfo.SchedCurrent.Songs.Count == 0)
-			{
-				return;
-			}
-
-			var currentSong = songInfo.SchedCurrent.Songs[0];
-
-			if (withImage)
-			{
-				var image = $"http://www.rainwave.cc{currentSong.Albums[0].Art}_120.jpg";
-
-				var notificationImage = (XmlElement)notification.GetElementsByTagName("image")[0];
-				notificationImage.SetAttribute("src", image);
-				notificationImage.SetAttribute("alt", currentSong.Albums[0].Name);
-			}
-
-			var notificationLines = notification.GetElementsByTagName("text");
-
-			notificationLines[0].InnerText =
-				$"Now Playing: {currentSong.Title} ({(currentSong.RatingUser == 0 ? "Unrated" : $"Rated {currentSong.RatingUser:#.0}")})";
-			notificationLines[1].InnerText = $"Album: {currentSong.Albums[0].Name}";
-
-			if (!string.IsNullOrWhiteSpace(currentSong.ElecRequestUsername))
-			{
-				notificationLines[2].InnerText = $"Requested by: {currentSong.ElecRequestUsername}";
-			}
-
-			var toastNotification = new ToastNotification(notification)
-			{
-				ExpirationTime = DateTimeOffset.Now.AddSeconds(currentSong.Length)
-			};
-
-			_toastNotifier.Show(toastNotification);
-
-		}
 
 		public void ExecuteWork(object state)
 		{
 			var info = _client.GetInfo(_client.CurrentSite);
-
-			ToastSong(info);
-
+			
 			UpdateRequestQueue(info);
 			Vote(info);
 
@@ -241,10 +192,8 @@ namespace SS.Rainwave.Client.Console
 				{
 					continue;
 				}
-
-				ToastSong(sync);
-
-				if (!IsPaused(sync) && !sync.User.TunedIn)
+				
+				if (!IsPaused() && !sync.User.TunedIn)
 				{
 					AutoPauseRequestQueue(null);
 				}
